@@ -18,3 +18,9 @@ frontend/coverage/
 .claude/
 .agents/
 docs/evaluation_results.json
+resources/
+backend/tests/
+backend/scripts/
+frontend/e2e/
+frontend/src/test/
+**/*.png

@@ -1,33 +1,39 @@
-# Stage 1: Build React Frontend
-FROM node:20-slim AS frontend-builder
-WORKDIR /build
+# NIYAMLENS — single-service image: FastAPI serves the API (/api) and the built React app (/).
+# The image keeps the repository layout (/app/backend, /app/data, /app/frontend/dist) so the
+# backend finds its data and static files exactly as it does in local development.
 
-COPY frontend/package*.json ./
-RUN npm ci
-
+# ---- Stage 1: build the React frontend -------------------------------------------------
+FROM node:22-slim AS frontend
+WORKDIR /build/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
-# Build production assets into /build/dist
-RUN npm run build || true
+# Type-check and build; a failing build fails the image build.
+RUN npm run build
 
-# Stage 2: Production Python Runtime
-FROM python:3.11-slim
+# ---- Stage 2: Python runtime -----------------------------------------------------------
+FROM python:3.13-slim AS runtime
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PORT=8000
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+COPY backend/requirements.txt backend/requirements.txt
+RUN pip install -r backend/requirements.txt
 
-# Install backend dependencies
-COPY backend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/app backend/app
+# Only the rule data the server reads at runtime (JSONL + page text + data dictionary).
+COPY data/bhumi_vikas_rules.jsonl data/bhumi_vikas_rules_fulltext_by_page.txt data/DATA_DICTIONARY.md data/
+COPY --from=frontend /build/frontend/dist frontend/dist
 
-# Copy backend code and statutory datasets
-COPY backend/app ./app
-COPY data/ ./data
-COPY resources/ ./resources
-
-# Copy built frontend assets (if built) into frontend/dist
-COPY --from=frontend-builder /build/dist ./frontend/dist
+RUN useradd --create-home --uid 10001 appuser && chown -R appuser /app
+USER appuser
 
 EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD python -c "import os,urllib.request; urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\",\"8000\")}/api/health', timeout=4)" || exit 1
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+WORKDIR /app/backend
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

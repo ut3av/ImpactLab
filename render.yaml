@@ -1,0 +1,18 @@
+# Render Blueprint: one Docker web service. Render sets PORT; the container binds 0.0.0.0:$PORT.
+# CEREBRAS_API_KEY is optional and must be entered in the Render dashboard (sync: false) — never committed.
+services:
+  - type: web
+    name: niyamlens
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: CEREBRAS_API_KEY
+        sync: false
+      - key: CEREBRAS_MODEL
+        value: gpt-oss-120b
+      - key: CEREBRAS_TIMEOUT_S
+        value: "20"
