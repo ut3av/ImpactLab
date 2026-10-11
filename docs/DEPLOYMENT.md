@@ -1,12 +1,12 @@
-# NIYAMLENS: Deployment and Production Configuration Guide
+# MIRA: Deployment and Production Configuration Guide
 
-This guide details the deployment architecture, containerization, local execution, CI/CD pipeline, and Render cloud deployment for **NIYAMLENS** (Track 1: Bhumi Vikas Sahayak, Bhopal Impact Lab 2026).
+This guide details the deployment architecture, containerization, local execution, CI/CD pipeline, and Render cloud deployment for **MIRA** (Track 1: Bhumi Vikas Sahayak, Bhopal Impact Lab 2026).
 
 ---
 
 ## 1. Target Deployment Architecture
 
-NIYAMLENS is packaged as a **single-origin monolithic container**. This architecture:
+MIRA is packaged as a **single-origin monolithic container**. This architecture:
 * Eliminates Cross-Origin Resource Sharing (CORS) complexity and security risks.
 * Avoids multi-container orchestration overhead.
 * Guarantees that the browser accesses the React single-page application and the FastAPI REST API through the exact same origin (`https://<domain>/` and `https://<domain>/api/*`).
@@ -15,7 +15,7 @@ NIYAMLENS is packaged as a **single-origin monolithic container**. This architec
 ```mermaid
 graph TD
     Client["Browser / Municipal Counter Client"] -->|HTTPS (Port 443 / $PORT)| Render["Render Web Service / Container Gateway"]
-    subgraph Container ["NIYAMLENS Container (Single Origin)"]
+    subgraph Container ["MIRA Container (Single Origin)"]
         Uvicorn["Uvicorn Server (0.0.0.0:$PORT)"]
         FastAPI["FastAPI Application (app.main:app)"]
         API["REST API (/api/health, /api/rules/*, /api/answer, /api/calculate)"]
@@ -156,16 +156,16 @@ When Docker is installed on your workstation:
 
 ```bash
 # Build the production image
-docker build -t niyamlens:latest .
+docker build -t mira:latest .
 
 # Run the container (offline mode without Cerebras key)
-docker run -d --name niyamlens -p 8000:8000 niyamlens:latest
+docker run -d --name mira -p 8000:8000 mira:latest
 
 # Or run with Cerebras AI enabled
-docker run -d --name niyamlens -p 8000:8000 \
+docker run -d --name mira -p 8000:8000 \
   -e CEREBRAS_API_KEY="your_api_key_here" \
   -e CEREBRAS_MODEL="gpt-oss-120b" \
-  niyamlens:latest
+  mira:latest
 ```
 
 Verify the container:
@@ -220,7 +220,7 @@ The repository includes a root-level `render.yaml` declaring the web service:
 ```yaml
 services:
   - type: web
-    name: niyamlens
+    name: mira
     runtime: docker
     region: singapore
     plan: free
@@ -255,7 +255,7 @@ services:
    * Enter your `CEREBRAS_API_KEY` value under the `CEREBRAS_API_KEY` variable.
    * Click **Save Changes**.
 5. **Verify Deployment:**
-   * Render will assign a public domain: `https://niyamlens.onrender.com` (or similar).
+   * Render will assign a public domain: `https://mira.onrender.com` (or similar).
    * Test health: `https://<your-service>.onrender.com/api/health`.
    * Open the URL in a browser and submit a building regulation query.
 
@@ -290,7 +290,7 @@ The repository includes `vercel.json` (root) and `frontend/vercel.json` with SPA
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://niyamlens.onrender.com/api/:path*"
+      "destination": "https://mira.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
@@ -309,7 +309,7 @@ The repository includes `vercel.json` (root) and `frontend/vercel.json` with SPA
    * **Build Command:** `npm --prefix frontend run build` (or `npm run build` if Root is `frontend`)
    * **Output Directory:** `frontend/dist` (or `dist` if Root is `frontend`)
 4. **Environment Variables (Optional):**
-   * If your Render backend is not `https://niyamlens.onrender.com`, set:
+   * If your Render backend is not `https://mira.onrender.com`, set:
      `VITE_API_BASE_URL=https://<your-actual-service>.onrender.com`
 5. **Click Deploy:** Vercel deploys the application with global edge caching and instant atomic invalidation.
 

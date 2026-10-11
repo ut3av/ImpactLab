@@ -1,4 +1,4 @@
-# NIYAMLENS — single-service image: FastAPI serves the API (/api) and the built React app (/).
+# MIRA — single-service image: FastAPI serves the API (/api) and the built React app (/).
 # The image keeps the repository layout (/app/backend, /app/data, /app/frontend/dist) so the
 # backend finds its data and static files exactly as it does in local development.
 

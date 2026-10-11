@@ -45,7 +45,7 @@ describe("Workbench", () => {
   it("renders the three-panel workspace with empty states", async () => {
     mockFetch(routes)
     renderApp()
-    expect(screen.getByText("NIYAM")).toBeInTheDocument()
+    expect(screen.getByText("MIRA")).toBeInTheDocument()
     expect(screen.getByRole("form", { name: "Project inputs" })).toBeInTheDocument()
     expect(screen.getByText("No plot drawn yet")).toBeInTheDocument()
     expect(screen.getByText(/Ask a question in English or Hindi/)).toBeInTheDocument()
@@ -141,7 +141,7 @@ describe("Counter Receipt", () => {
     expect(screen.getAllByText(/Rule 56\(1\)\(a\)/).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/PDF page 77/).length).toBeGreaterThan(0)
     expect(screen.getByText("Calculation details")).toBeInTheDocument()
-    expect(screen.getByText(/Ref NL-|NL-/)).toBeInTheDocument()
+    expect(screen.getByText(/Ref MIRA-|MIRA-/)).toBeInTheDocument()
   })
 
   it("prints via the browser", async () => {

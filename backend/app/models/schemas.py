@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 SOURCE_DOCUMENT = "M.P. Bhumi Vikas Rules, 2012 (English, consolidated up to 06-03-2025)"
 SOURCE_PDF = "MP_Bhumi_Vikas_Rules_2012_upto_2025-03-06_EN.pdf"
@@ -199,4 +199,114 @@ class AnswerResponse(BaseModel):
     extracted_inputs: dict[str, float | int | str]
     search: SearchTrace
     ai_available: bool
+    generated_at: str
+
+
+# ---------------------------------------------------------------------- explanations
+# The client sends identifiers only (calculation types, citation ids, a focus); the server
+# rebuilds every rule passage, value, status and warning from its own data before explaining.
+
+Side = Literal["front", "rear", "left", "right"]
+FocusElement = Literal["building", "plot", "road"]
+SectionKey = Literal["meaning", "why_it_applies", "evidence", "calculation", "building_impact", "uncertainty", "next_step"]
+SECTION_ORDER: tuple[str, ...] = (
+    "meaning", "why_it_applies", "evidence", "calculation", "building_impact", "uncertainty", "next_step",
+)
+ExplainFallbackReason = Literal[
+    "not_configured",     # no CEREBRAS_API_KEY on the server
+    "ai_disabled",        # request asked for no AI
+    "not_found",          # the supplied rules do not answer the question; the model is never asked
+    "rate_limited",       # local or upstream rate limit
+    "timeout",
+    "network",
+    "auth",               # key rejected upstream
+    "model_unavailable",  # configured model id not found / unsupported
+    "invalid_response",   # malformed, schema-invalid or empty model output
+    "rejected",           # output failed grounding checks (numbers, rules, citations, markup, claims, language)
+    "unavailable",        # any other upstream failure
+]
+# Store passages look like "56#3" or "26-B#0"; PDF-verified tables look like "verified:56_1_front".
+CITATION_ID_PATTERN = r"^(?:verified:[a-z0-9_]{1,40}|\d{1,3}(?:-[A-Z])?#\d{1,4})$"
+CitationId = Annotated[str, StringConstraints(pattern=CITATION_ID_PATTERN)]
+FOCUS_SIDES: dict[str, tuple[str, ...]] = {
+    "front_open_space": ("front",),
+    "rear_open_space": ("rear",),
+    "side_open_space": ("left", "right"),
+}
+
+
+class ExplainFocus(BaseModel):
+    """What the clerk selected: one calculation (optionally one of its sides) or one drawn element."""
+
+    model_config = ConfigDict(extra="forbid")
+    calc_type: CalcType | None = None
+    side: Side | None = None
+    element: FocusElement | None = None
+
+    @model_validator(mode="after")
+    def _check(self) -> "ExplainFocus":
+        if (self.calc_type is None) == (self.element is None):
+            raise ValueError("focus must name exactly one of calc_type or element")
+        if self.side is not None:
+            if self.calc_type is None:
+                raise ValueError("focus.side requires focus.calc_type")
+            if self.side not in FOCUS_SIDES.get(self.calc_type, ()):
+                raise ValueError(f"side '{self.side}' is not drawn by {self.calc_type}")
+        return self
+
+
+class ExplainRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    language: Literal["en", "hi"] = "en"
+    detail: Literal["brief", "detailed"] = "brief"
+    question: str | None = Field(default=None, max_length=1000)
+    inputs: ProjectInputs | None = None
+    calc_types: list[CalcType] = Field(default_factory=list, max_length=6)
+    citation_ids: list[CitationId] = Field(default_factory=list, max_length=8)
+    focus: ExplainFocus | None = None
+    use_ai: bool = True
+
+    @model_validator(mode="after")
+    def _normalise(self) -> "ExplainRequest":
+        if self.question is not None:
+            self.question = self.question.strip() or None
+        self.calc_types = list(dict.fromkeys(self.calc_types))
+        self.citation_ids = list(dict.fromkeys(self.citation_ids))
+        if self.focus and self.focus.calc_type and self.focus.calc_type not in self.calc_types:
+            self.calc_types.append(self.focus.calc_type)
+        if not (self.question or self.calc_types or self.focus):
+            raise ValueError("Nothing to explain: provide a question, a calculation or a selected element.")
+        return self
+
+
+class ExplainSection(BaseModel):
+    key: SectionKey
+    text: str
+
+
+class ExplainTarget(BaseModel):
+    kind: Literal["result", "calculation", "constraint", "element"]
+    label: str
+    status: Status
+    calc_type: str | None = None
+    side: Side | None = None
+    element: FocusElement | None = None
+
+
+class ExplainResponse(BaseModel):
+    language: Literal["en", "hi"]
+    detail: Literal["brief", "detailed"]
+    source: Literal["ai", "basic"]
+    model: str | None = None
+    fallback_reason: ExplainFallbackReason | None = None
+    target: ExplainTarget
+    summary: str
+    sections: list[ExplainSection]
+    primary_status: Status
+    statuses: list[Status]
+    # Authoritative evidence, rebuilt from the loaded rule data — never from model output.
+    citations: list[Citation]
+    warnings: list[Warning]
+    missing_inputs: list[MissingInput]
+    disclosures: list[str] = []
     generated_at: str

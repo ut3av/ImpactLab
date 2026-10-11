@@ -1,12 +1,12 @@
-# NIYAMLENS: Testing Strategy & Evaluation Benchmark
+# MIRA: Testing Strategy & Evaluation Benchmark
 
-This document details the quality assurance architecture, test suites, and benchmark evaluation results for **NIYAMLENS**.
+This document details the quality assurance architecture, test suites, and benchmark evaluation results for **MIRA**.
 
 ---
 
 ## 1. Quality Assurance Strategy
 
-NIYAMLENS implements a multi-layer verification strategy designed around regulatory precision:
+MIRA implements a multi-layer verification strategy designed around regulatory precision:
 
 ```mermaid
 graph TD

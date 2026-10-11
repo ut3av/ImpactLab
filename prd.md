@@ -1,7 +1,7 @@
-# NIYAMLENS: Product Requirements Document (PRD)
+# MIRA: Product Requirements Document (PRD)
 
-**Product:** NIYAMLENS  
-**Tagline:** See the Rule. Understand Its Impact.  
+**Product:** MIRA  
+**Tagline:** See the Rules. Understand the Structure.  
 **Category:** AI-Assisted Regulatory Intelligence & Spatial Decision Support  
 **Target User:** Building-Permission Clerk, Bhopal Municipal Corporation  
 **Platform:** Responsive Web Application (Single-Page Application + REST API)  
@@ -15,9 +15,9 @@
 
 ## 1. Product Vision & Philosophy
 
-**NIYAMLENS** is an evidence-backed regulatory intelligence platform that empowers municipal building-permission clerks to find, understand, verify, and visually communicate building regulations from the *Madhya Pradesh Bhumi Vikas Rules, 2012*.
+**MIRA** is an evidence-backed regulatory intelligence platform that empowers municipal building-permission clerks to find, understand, verify, and visually communicate building regulations from the *Madhya Pradesh Bhumi Vikas Rules, 2012*.
 
-Unlike generic chatbots that summarize documents into unverifiable conversational text, NIYAMLENS grounds every statement in authentic statutory provisions, executes calculations deterministically in code, and translates spatial rules into interactive 3D geometry via the **Rule-to-Geometry Engine**.
+Unlike generic chatbots that summarize documents into unverifiable conversational text, MIRA grounds every statement in authentic statutory provisions, executes calculations deterministically in code, and translates spatial rules into interactive 3D geometry via the **Rule-to-Geometry Engine**.
 
 **Core Philosophy:** *A language model may explain a rule, but code must calculate the numbers, citations must prove the law, and geometry must visualize the physical impact.*
 
@@ -38,7 +38,7 @@ At the Bhopal Municipal Corporation building-permission counter:
 ### 2.2. The Primary User
 * **Primary Persona:** Building-Permission Counter Clerk, Bhopal Municipal Corporation.
 * **User Need:** Rapid, verifiable answers backed by exact rule numbers and PDF page references, automated fee/setback calculations, spatial visualizations to explain constraints to citizens, and informational counter receipts.
-* **Operational Scope:** Decision support only. NIYAMLENS informs the clerk; the clerk makes the official determination.
+* **Operational Scope:** Decision support only. MIRA informs the clerk; the clerk makes the official determination.
 
 ---
 
@@ -54,7 +54,7 @@ At the Bhopal Municipal Corporation building-permission counter:
 7. **Offline Resilience:** Operate seamlessly without an active Cerebras API connection.
 
 ### 3.2. Non-Goals
-* **Not an Official Sanctioning Portal:** NIYAMLENS does not issue legal permits or replace statutory discretion.
+* **Not an Official Sanctioning Portal:** MIRA does not issue legal permits or replace statutory discretion.
 * **Not a Citizen Tax/Revenue Portal:** Excludes property tax payments, utility bills, or land registry lookups.
 * **Not a Full Architectural CAD Tool:** Does not generate building blueprints or replace CAD software.
 * **No Live Government Integrations:** Does not interface with live state portals or store citizen identity data.
@@ -63,7 +63,7 @@ At the Bhopal Municipal Corporation building-permission counter:
 
 ## 4. Unique Product Differentiators
 
-| Capability | Generic RAG Chatbot | NIYAMLENS |
+| Capability | Generic RAG Chatbot | MIRA |
 | ---------- | ------------------- | --------- |
 | **Numerical Calculations** | LLM guesses numbers; frequently misreads tabular brackets. | **Deterministic Code:** Python functions calculate exact values from codified tables. |
 | **Spatial Understanding** | Text descriptions only (e.g., "leave 3m front space"). | **Rule-to-Geometry Engine:** 3D interactive plot rendering verified restriction zones. |

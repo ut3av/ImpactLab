@@ -116,6 +116,65 @@ export const RuleDetailSchema = z.object({
 })
 export type RuleDetail = z.infer<typeof RuleDetailSchema>
 
+// ---------------------------------------------------------------------- explanations
+
+export const CALC_TYPES = [
+  "front_open_space",
+  "rear_open_space",
+  "side_open_space",
+  "site_open_spaces",
+  "building_permission_fee",
+  "electric_line_clearance",
+] as const
+export type CalcType = (typeof CALC_TYPES)[number]
+export type Side = Zone["side"]
+export type FocusElement = "building" | "plot" | "road"
+export type UiLanguage = "en" | "hi"
+
+/** What the clerk selected. The server rebuilds all evidence from these identifiers. */
+export type ExplainFocus = { calc_type: CalcType; side?: Side } | { element: FocusElement }
+
+export type ExplainRequest = {
+  language: UiLanguage
+  detail: "brief" | "detailed"
+  question: string | null
+  inputs: ProjectInputs
+  calc_types: CalcType[]
+  citation_ids: string[]
+  focus: ExplainFocus | null
+}
+
+export const EXPLAIN_SECTION_KEYS = ["meaning", "why_it_applies", "evidence", "calculation", "building_impact", "uncertainty", "next_step"] as const
+export const ExplainSectionSchema = z.object({ key: z.enum(EXPLAIN_SECTION_KEYS), text: z.string() })
+export type ExplainSection = z.infer<typeof ExplainSectionSchema>
+
+export const ExplainResponseSchema = z.object({
+  language: z.enum(["en", "hi"]),
+  detail: z.enum(["brief", "detailed"]),
+  source: z.enum(["ai", "basic"]),
+  model: z.string().nullable().optional(),
+  // Kept open so a newer server reason never breaks the client; known values are mapped in the UI.
+  fallback_reason: z.string().nullable().optional(),
+  target: z.object({
+    kind: z.enum(["result", "calculation", "constraint", "element"]),
+    label: z.string(),
+    status: StatusSchema,
+    calc_type: z.string().nullable().optional(),
+    side: z.enum(["front", "rear", "left", "right"]).nullable().optional(),
+    element: z.enum(["building", "plot", "road"]).nullable().optional(),
+  }),
+  summary: z.string(),
+  sections: z.array(ExplainSectionSchema),
+  primary_status: StatusSchema,
+  statuses: z.array(StatusSchema),
+  citations: z.array(CitationSchema),
+  warnings: z.array(WarningSchema),
+  missing_inputs: z.array(MissingInputSchema),
+  disclosures: z.array(z.string()),
+  generated_at: z.string(),
+})
+export type ExplainResponse = z.infer<typeof ExplainResponseSchema>
+
 export const BUILDING_USES = [
   ["residential", "Residential"],
   ["commercial", "Commercial / shops / factory"],

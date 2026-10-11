@@ -1,6 +1,6 @@
-# NIYAMLENS: Development Guide
+# MIRA: Development Guide
 
-This guide details how to set up, run, test, and troubleshoot the NIYAMLENS development environment.
+This guide details how to set up, run, test, and troubleshoot the MIRA development environment.
 
 ---
 
@@ -165,6 +165,6 @@ Update Vite's proxy configuration in `frontend/vite.config.ts` accordingly.
 ### 6.3. Running Without Cerebras API Key
 If no `CEREBRAS_API_KEY` is provided, the backend logs:
 ```text
-INFO niyamlens: AI explanation disabled (no CEREBRAS_API_KEY)
+INFO mira: AI explanation disabled (no CEREBRAS_API_KEY)
 ```
 This is expected behavior. The application seamlessly serves deterministic, verified template answers in English and Hindi without error.

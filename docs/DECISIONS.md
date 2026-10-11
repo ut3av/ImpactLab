@@ -1,6 +1,6 @@
-# NIYAMLENS: Architecture Decision Records (ADRs)
+# MIRA: Architecture Decision Records (ADRs)
 
-This document records the key architectural, technical, and product decisions made during the development of **NIYAMLENS**.
+This document records the key architectural, technical, and product decisions made during the development of **MIRA**.
 
 ---
 
@@ -78,7 +78,7 @@ This document records the key architectural, technical, and product decisions ma
 
 * **Status:** Accepted
 * **Context:** AI inference services can experience latency, network interruptions, or rate limits during counter operations.
-* **Decision:** The Cerebras inference client is optional. If unconfigured or unresponsive, NIYAMLENS seamlessly falls back to pre-verified deterministic template summaries.
+* **Decision:** The Cerebras inference client is optional. If unconfigured or unresponsive, MIRA seamlessly falls back to pre-verified deterministic template summaries.
 * **Rationale:** A municipal counter tool cannot fail when an external AI API is unreachable. Core search, citations, and calculations must function offline.
 * **Consequences:** The application remains operational in air-gapped or disconnected environments.
 

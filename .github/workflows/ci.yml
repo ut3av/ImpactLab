@@ -82,4 +82,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: false
-          tags: niyamlens:ci
+          tags: mira:ci

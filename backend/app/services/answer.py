@@ -288,12 +288,12 @@ class AnswerService:
                 lines.append(f"सबसे प्रासंगिक नियम: नियम {c.rule} — {c.title} (PDF पृष्ठ {c.page})। नीचे दिया गया मूल अंश पढ़ें।")
                 if others:
                     lines.append("संबंधित नियम: " + ", ".join(others) + "।")
-                lines.append("NIYAMLENS ने इस नियम को आपके मामले पर लागू करके कोई निष्कर्ष नहीं निकाला है।")
+                lines.append("MIRA ने इस नियम को आपके मामले पर लागू करके कोई निष्कर्ष नहीं निकाला है।")
             else:
                 lines.append(f"Most relevant supplied rule: Rule {c.rule} — {c.title} (PDF p. {c.page}). Read the quoted passage below.")
                 if others:
                     lines.append("Also see Rule " + ", ".join(others) + ".")
-                lines.append("NIYAMLENS has located the source text but has not applied it to your case.")
+                lines.append("MIRA has located the source text but has not applied it to your case.")
         return " ".join(lines)
 
 

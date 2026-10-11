@@ -83,7 +83,7 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
           <p className="mt-1 text-[12.5px] leading-snug text-ink/85">{w.detail}</p>
           {w.source_url && (
             <a href={w.source_url} target="_blank" rel="noreferrer noopener" className="mt-1.5 inline-flex items-center gap-1 text-[12px] text-cobalt underline-offset-2 hover:underline">
-              Amendment reference (external, not verified by NIYAMLENS) <ExternalLink className="size-3" aria-hidden />
+              Amendment reference (external, not verified by MIRA) <ExternalLink className="size-3" aria-hidden />
             </a>
           )}
         </section>

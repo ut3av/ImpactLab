@@ -2,9 +2,9 @@
 
 ## 1. Overview
 
-**NIYAMLENS** operates on public regulatory materials provided as part of **Claude Impact Lab 2026, Track 1: Bhumi Vikas Sahayak** (Bhopal, 11 October 2026).
+**MIRA** operates on public regulatory materials provided as part of **Claude Impact Lab 2026, Track 1: Bhumi Vikas Sahayak** (Bhopal, 11 October 2026).
 
-All legal statements, calculations, and spatial constraints in NIYAMLENS derive from these source materials. To ensure absolute fidelity, all source documents are kept locally within the repository under `data/` and `resources/`—no remote web scraping or unverified third-party APIs are queried at runtime.
+All legal statements, calculations, and spatial constraints in MIRA derive from these source materials. To ensure absolute fidelity, all source documents are kept locally within the repository under `data/` and `resources/`—no remote web scraping or unverified third-party APIs are queried at runtime.
 
 ---
 
@@ -42,7 +42,7 @@ Several amendments inserted rules with alphanumeric suffixes. The official PDF p
 `backend/app/rules/loader.py` includes regex-based logic (`find_embedded()`) to accurately detect and retrieve these embedded rules when requested by the user or clerk.
 
 ### 3.3. Running PDF Headers
-The raw `text` fields of `bhumi_vikas_rules.jsonl` contain running headers from the PDF (e.g., `Rule 56   M.P. Bhumi Vikas Rules, 2012   78`). NIYAMLENS utilizes these headers during ingestion to determine the exact PDF page where each sub-clause begins, and then strips them from the passage before indexing.
+The raw `text` fields of `bhumi_vikas_rules.jsonl` contain running headers from the PDF (e.g., `Rule 56   M.P. Bhumi Vikas Rules, 2012   78`). MIRA utilizes these headers during ingestion to determine the exact PDF page where each sub-clause begins, and then strips them from the passage before indexing.
 
 ### 3.4. Flattened Tables
 In the extracted text, multi-column tables (such as Table 4 under Rule 56 for residential setbacks or Rule 21 for permission fees) have been flattened to whitespace-delimited plain text. While human-readable, raw character alignment can vary. Consequently:
@@ -58,7 +58,7 @@ The official consolidated Hindi document (`resources/MP_Bhumi_Vikas_Rules_2012_u
 ### Architectural Mitigation:
 1. **Authoritative Text:** The English consolidated PDF (`MP_Bhumi_Vikas_Rules_2012_upto_2025-03-06_EN.pdf`) is treated as the primary machine-readable source of truth for text retrieval and tables.
 2. **Legal Hierarchy Disclosure:** Under Rule 4 (citing the judicial precedent *Kurban Hussain v. Indore Municipal Corporation* printed on PDF page 15), the Hindi gazetted text is the governing statutory authority, and the English version is an official translation.
-3. **Transparent Warning:** Whenever answering a Hindi query, NIYAMLENS attaches the warning `HINDI_TEXT_PREVAILS`, informing the user that English quotations are authoritative translations and that Hindi summaries are generated interpretations rather than direct gazette excerpts.
+3. **Transparent Warning:** Whenever answering a Hindi query, MIRA attaches the warning `HINDI_TEXT_PREVAILS`, informing the user that English quotations are authoritative translations and that Hindi summaries are generated interpretations rather than direct gazette excerpts.
 
 ---
 
@@ -69,9 +69,9 @@ The consolidated rulebook bundled with the problem pack reflects the law as cons
 ### The August 28, 2026 Amendment:
 On August 28, 2026, the Government of Madhya Pradesh published an amendment to **Rule 2(5)(c)** regarding development permission requirements for plots up to 500 square metres. 
 
-### NIYAMLENS Policy on Unverified Amendments:
-1. **No Silent Merging:** NIYAMLENS does **not** silently splice unverified third-party amendment text into the official 2025 rulebook.
-2. **Proactive Version Flagging:** Whenever a query touches Rule 2(5)(c), development permissions, or plots up to 500 sq m (such as Sample Question 11), NIYAMLENS assigns the status `VERSION_REVIEW_NEEDED` and attaches the alert `AMENDMENT_2026_RULE_2_5_C`.
+### MIRA Policy on Unverified Amendments:
+1. **No Silent Merging:** MIRA does **not** silently splice unverified third-party amendment text into the official 2025 rulebook.
+2. **Proactive Version Flagging:** Whenever a query touches Rule 2(5)(c), development permissions, or plots up to 500 sq m (such as Sample Question 11), MIRA assigns the status `VERSION_REVIEW_NEEDED` and attaches the alert `AMENDMENT_2026_RULE_2_5_C`.
 3. **Clerk Advisory:** The clerk is explicitly advised to consult the gazetted notification dated 28 August 2026 before rendering an administrative opinion.
 
 ---
@@ -81,4 +81,4 @@ On August 28, 2026, the Government of Madhya Pradesh published an amendment to *
 * **Publisher:** Directorate of Town and Country Planning, Government of Madhya Pradesh.
 * **Legislation:** Madhya Pradesh Bhumi Vikas Rules, 2012 (enacted under the Madhya Pradesh Nagar Tatha Gram Nivesh Adhiniyam, 1973).
 * **Participant Pack:** Prepared for Claude Impact Lab × Cerebras Café Compute, Bhopal (October 2026).
-* **Redistribution:** The regulatory documents are public government publications hosted for regulatory compliance and citizen information. NIYAMLENS does not assert copyright over the statutory texts, tables, or PDF contents.
+* **Redistribution:** The regulatory documents are public government publications hosted for regulatory compliance and citizen information. MIRA does not assert copyright over the statutory texts, tables, or PDF contents.

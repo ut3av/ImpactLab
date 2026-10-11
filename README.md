@@ -1,8 +1,8 @@
 <div align="center">
 
-# NIYAMLENS · नियमलेंस
+# MIRA · Municipal Intelligence for Rules & Architecture
 
-### *Visual Building Regulation Intelligence · See the Rule. Understand Its Impact.*
+### *Municipal Intelligence for Rules & Architecture · See the Rules. Understand the Structure.*
 #### *नियम देखें, प्रभाव समझें*
 
 <p align="center">
@@ -38,7 +38,7 @@
 <p align="center">
   <a href="#geospatial-focus--bhopal-municipal-corporation">Geospatial Focus</a> •
   <a href="#the-problem-at-the-counter">The Problem</a> •
-  <a href="#the-niyamlens-solution">Solution</a> •
+  <a href="#the-mira-solution">Solution</a> •
   <a href="#system-architecture">Architecture</a> •
   <a href="#the-rule-to-geometry-engine">Rule-to-Geometry</a> •
   <a href="#benchmark-evaluation-17-questions">17 Benchmarks</a> •
@@ -52,7 +52,7 @@
 
 | Team | Members | Track | Target User | Location Context |
 |---|---|---|---|---|
-| **NIYAMLENS Team** | Open Source Contributors | Claude Impact Lab 2026 · Track 1: Bhumi Vikas Sahayak | BMC Building-Permission Counter Clerk | SSR Global Skills Park, Bhopal, MP |
+| **MIRA Team** | Open Source Contributors | Claude Impact Lab 2026 · Track 1: Bhumi Vikas Sahayak | BMC Building-Permission Counter Clerk | SSR Global Skills Park, Bhopal, MP |
 
 > **Administrative & Legal Notice:** Informational decision-support prototype only. Not an official building permit, plan sanction, or binding legal opinion under the *M.P. Nagar Tatha Gram Nivesh Adhiniyam, 1973* or the *M.P. Bhumi Vikas Rules, 2012*. Final administrative discretion remains exclusively with the competent municipal authority. Not officially endorsed by the Government of Madhya Pradesh, MPSeDC, or the Bhopal Municipal Corporation.
 
@@ -75,7 +75,7 @@
 
 </div>
 
-NIYAMLENS is rooted in the physical and legal topography of **Bhopal, Madhya Pradesh**. Every building permit issued in Bhopal—from residential plots in Kolar Road and Arera Colony to commercial setups in MP Nagar—is governed by the *Madhya Pradesh Bhumi Vikas Rules, 2012*. 
+MIRA is rooted in the physical and legal topography of **Bhopal, Madhya Pradesh**. Every building permit issued in Bhopal—from residential plots in Kolar Road and Arera Colony to commercial setups in MP Nagar—is governed by the *Madhya Pradesh Bhumi Vikas Rules, 2012*. 
 
 The system treats statutory geography not as generic text, but as exact physical coordinates, street width thresholds, and volumetric plot boundaries.
 
@@ -95,13 +95,13 @@ In practice, answering this within a minute is difficult:
 
 ---
 
-## The NIYAMLENS Solution
+## The MIRA Solution
 
-NIYAMLENS provides a complete, grounded workflow that replaces speculative chat with verified legal evidence and 3D spatial geometry:
+MIRA provides a complete, grounded workflow that replaces speculative chat with verified legal evidence and 3D spatial geometry:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                              THE NIYAMLENS GUARANTEE                                   │
+│                              THE MIRA GUARANTEE                                   │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │  ✓ Page-Accurate Citations:  Rule 56(1)(a), Table 4 (Official English PDF Page 77)     │
 │  ✓ Deterministic Math:       Python evaluates exact numbers; zero LLM arithmetic       │
@@ -114,7 +114,7 @@ NIYAMLENS provides a complete, grounded workflow that replaces speculative chat 
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-| Dimension | Generic RAG Chatbot | NIYAMLENS |
+| Dimension | Generic RAG Chatbot | MIRA |
 |---|---|---|
 | **Math & Numbers** | LLM guesses arithmetic; frequently miscalculates table rows. | **Deterministic Code:** Pure Python functions evaluate exact table brackets. |
 | **Spatial Understanding** | Text descriptions only (*"leave 3m front space"*). | **Rule-to-Geometry Engine:** Interactive 3D plot rendering verified zones. |
@@ -127,7 +127,7 @@ NIYAMLENS provides a complete, grounded workflow that replaces speculative chat 
 
 ## System Architecture
 
-NIYAMLENS employs a three-tier decoupled architecture: in-memory statutory memory, deterministic Python calculation services, and a guarded presentation layer with on-demand 3D spatial rendering.
+MIRA employs a three-tier decoupled architecture: in-memory statutory memory, deterministic Python calculation services, and a guarded presentation layer with on-demand 3D spatial rendering.
 
 ```mermaid
 graph TD
@@ -231,7 +231,7 @@ Pure Python functions evaluate statutory rules with zero LLM arithmetic:
 
 ## The Rule-to-Geometry Engine
 
-The **Rule-to-Geometry Engine** is the visual differentiator of NIYAMLENS, translating abstract statutory clauses into interactive 3D spatial envelopes.
+The **Rule-to-Geometry Engine** is the visual differentiator of MIRA, translating abstract statutory clauses into interactive 3D spatial envelopes.
 
 ```mermaid
 graph LR
@@ -314,7 +314,7 @@ The following calculations are verified and implemented in code. Each was checke
 | **Building Permission Fees** | Rule 21(3)(b) items 1–6 (p. 36), 21(3)(c) (p. 37) | Built-up area ($m^2$), use, height | Total statutory fee ($₹$) with application fee breakdown |
 | **Overhead Electric Line Clearances** | Rule 52(1) (p. 69) | Voltage class (low/med, high ≤33kV, extra-high) | Minimum vertical and horizontal clearances ($m$) |
 
-*Deliberately not calculated:* FAR (outside Rule 42 rows), parking space schedules, and ground coverage. For those topics, NIYAMLENS provides verbatim cited passages (`SOURCE_FOUND`), never fabricated numbers.
+*Deliberately not calculated:* FAR (outside Rule 42 rows), parking space schedules, and ground coverage. For those topics, MIRA provides verbatim cited passages (`SOURCE_FOUND`), never fabricated numbers.
 
 ---
 
@@ -380,7 +380,7 @@ pytest -q
 ```bash
 cp ../.env.example ../.env
 # Edit ../.env to configure CEREBRAS_API_KEY.
-# If omitted, NIYAMLENS runs offline with 100% verified template answers!
+# If omitted, MIRA runs offline with 100% verified template answers!
 ```
 
 ### Step 5: Launch the Application
@@ -398,17 +398,17 @@ Visit:
 
 ## Production Deployment & Docker
 
-NIYAMLENS is packaged as a **Single-Origin Monolithic Container**:
+MIRA is packaged as a **Single-Origin Monolithic Container**:
 1. **Frontend Compilation:** Stage 1 uses `node:22-slim` to compile the React 19 SPA into static assets (`frontend/dist`).
 2. **Runtime Serving:** Stage 2 uses `python:3.13-slim` where FastAPI serves the JSON API under `/api/*` and static SPA files under `/`. A non-root user (`appuser`, UID 10001) runs the process.
 3. **Statutory Data:** Packaged directly inside `data/` in the image — no database or external API dependencies at startup.
 
 ```bash
 # Build production Docker image
-docker build -t niyamlens:latest .
+docker build -t mira:latest .
 
 # Run container locally (binds 0.0.0.0:8000)
-docker run -p 8000:8000 -e PORT=8000 niyamlens:latest
+docker run -p 8000:8000 -e PORT=8000 mira:latest
 ```
 
 The repository includes a ready-to-deploy **Render Blueprint** (`render.yaml`) targeting the Singapore region with health check `/api/health`. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for full deployment instructions, environment variables, and CI/CD details.

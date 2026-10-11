@@ -12,7 +12,7 @@ from app.rules.verified_tables import FRONT_OPEN_SPACE_56, REAR_OPEN_SPACE_56, T
 LOW_RISE_LIMIT_M = 12.5
 NON_RESIDENTIAL_NOTE = (
     "Rule 56 applies to residential buildings. Open spaces for other occupancies up to 12.5 m are in "
-    "Rule 57 (PDF pp. 80–81); NIYAMLENS has not verified Rule 57 for calculation, so no value is given."
+    "Rule 57 (PDF pp. 80–81); MIRA has not verified Rule 57 for calculation, so no value is given."
 )
 
 

@@ -1,10 +1,10 @@
-# NIYAMLENS: Technical Architecture
+# MIRA: Technical Architecture
 
 ## 1. System Overview
 
-**NIYAMLENS** is an AI-assisted regulatory intelligence and spatial visualization platform designed specifically for building-permission clerks at the Bhopal Municipal Corporation.
+**MIRA** is an AI-assisted regulatory intelligence and spatial visualization platform designed specifically for building-permission clerks at the Bhopal Municipal Corporation.
 
-Rather than operating as a conventional conversational wrapper over unstructured PDFs, NIYAMLENS implements a **three-tier decoupled architecture**:
+Rather than operating as a conventional conversational wrapper over unstructured PDFs, MIRA implements a **three-tier decoupled architecture**:
 1. **Deterministic Rule Ingestion & Self-Verifying Tables:** In-memory rule passage indexing with exact PDF page mapping.
 2. **Deterministic Calculation & Geometry Engine:** Pure Python algorithms for tables, setback brackets, permission fees, and spatial boundaries.
 3. **Guarded Explanation & Visualization Layer:** An optional Cerebras inference pipeline for natural-language synthesis constrained by strict schema and number guards, coupled with a lightweight React Three Fiber 3D spatial viewport.
@@ -197,7 +197,7 @@ The client application is built with **React 19**, **TypeScript**, **Vite**, **T
 
 ## 7. Deployment Topology
 
-NIYAMLENS is designed for a **Single-Origin Monolithic Container**:
+MIRA is designed for a **Single-Origin Monolithic Container**:
 1. **Build Stage:** Node.js container builds the Vite React application (`npm run build`), generating static assets in `frontend/dist`.
 2. **Runtime Stage:** Lightweight Python 3.11 container mounts `frontend/dist` at the root (`/`) while exposing the REST API under `/api`.
 3. **No External Database:** Eliminates PostgreSQL/Redis operational overhead; boots in < 3 seconds.

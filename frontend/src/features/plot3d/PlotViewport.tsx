@@ -93,7 +93,7 @@ function EmptyPlot() {
         </div>
         <p className="text-sm font-medium text-ink">No plot drawn yet</p>
         <p className="mt-1 text-[12.5px] leading-snug text-muted-foreground">
-          Enter the plot <strong>width</strong> and <strong>depth</strong>. NIYAMLENS never infers dimensions from plot area alone.
+          Enter the plot <strong>width</strong> and <strong>depth</strong>. MIRA never infers dimensions from plot area alone.
         </p>
       </div>
     </div>

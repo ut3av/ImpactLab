@@ -1,4 +1,4 @@
-"""NIYAMLENS FastAPI application: JSON API under /api and the built React app at /."""
+"""MIRA FastAPI application: JSON API under /api and the built React app at /."""
 from __future__ import annotations
 
 import logging
@@ -22,7 +22,7 @@ from app.services.answer import AnswerService
 from app.services.llm import LLMClient
 from app.services.retrieval import Retriever
 
-log = logging.getLogger("niyamlens")
+log = logging.getLogger("mira")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
 
@@ -55,7 +55,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         yield
 
     app = FastAPI(
-        title="NIYAMLENS API",
+        title="MIRA API",
         version="1.0.0",
         lifespan=lifespan,
         docs_url="/api/docs",

@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.config import Settings
 
-log = logging.getLogger("niyamlens.llm")
+log = logging.getLogger("mira.llm")
 
 
 class ExplainOut(BaseModel):
@@ -101,7 +101,7 @@ class LLMClient:
     def explain(self, question: str, language: str, evidence: list[dict], facts: list[str]) -> ExplainOut | None:
         lang_name = "Hindi (Devanagari script)" if language == "hi" else "English"
         system = (
-            "You are NIYAMLENS, assisting a municipal building-permission clerk in Bhopal. Write a short answer "
+            "You are MIRA (Municipal Intelligence for Rules & Architecture), assisting a municipal building-permission clerk in Bhopal. Write a short answer "
             f"(at most 4 sentences) in {lang_name}. Use ONLY the evidence passages and computed facts given. "
             "Do not add any rule, number, fee, distance or condition that is not in them. If the evidence does not "
             "answer the question, say that it is not found in the supplied rules. Mention rule numbers. Never say "

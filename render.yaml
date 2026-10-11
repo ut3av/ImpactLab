@@ -2,7 +2,7 @@
 # CEREBRAS_API_KEY is optional and must be entered in the Render dashboard (sync: false) — never committed.
 services:
   - type: web
-    name: niyamlens
+    name: mira
     runtime: docker
     region: singapore
     plan: free

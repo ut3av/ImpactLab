@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://niyamlens.onrender.com/api/:path*"
+      "destination": "https://mira.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

@@ -130,9 +130,9 @@ function AppHeader({ health, healthError }: { health: ReturnType<typeof useWorkb
         </div>
         <div className="leading-tight">
           <p className="text-[15px] font-semibold tracking-tight">
-            NIYAM<span className="text-[oklch(0.75_0.12_264)]">LENS</span>
+            MIRA
           </p>
-          <p className="text-[11px] text-paper/65">See the rule. Understand its impact.</p>
+          <p className="text-[11px] text-paper/65">See the Rules. Understand the Structure.</p>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[10.5px] text-paper/75">

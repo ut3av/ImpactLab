@@ -16,7 +16,7 @@ AMENDMENT_2026 = Warning(
     detail=(
         "The supplied rulebook is consolidated only up to 6 March 2025. On 28 August 2026 Rule 2(5)(c), "
         "concerning plots up to 500 sq m, was amended. That amendment is not in the supplied data and has not "
-        "been verified by NIYAMLENS, so this answer may not reflect the current law for such plots. Verify "
+        "been verified by MIRA, so this answer may not reflect the current law for such plots. Verify "
         "against the official notification before relying on it."
     ),
     source_url="https://teamleaseregtech.com/updates/article/59469/government-of-madhya-pradesh-amendment-to-land-development-rules",

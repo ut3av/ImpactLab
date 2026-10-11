@@ -45,6 +45,6 @@ cited source agrees with it.
 ### Still needs human review
 
 - Q4 and Q9: the cited rule is right, but the complete answer needs a person to read the passage (time limit, alteration fees).
-- Q10 and Q14: some reviewers may expect an unconditional value. NIYAMLENS deliberately does not assume building height or use.
+- Q10 and Q14: some reviewers may expect an unconditional value. MIRA deliberately does not assume building height or use.
 - Q2: FAR and plot size appear only in the quoted text; they are not computed or structured.
 - AI explanations were not evaluated against the live Cerebras API. Only mocked responses were tested (valid, invented-number, unknown-citation, malformed and failure cases in `backend/tests/test_llm.py`).

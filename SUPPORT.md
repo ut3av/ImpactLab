@@ -1,6 +1,6 @@
-# Getting Support for NIYAMLENS
+# Getting Support for MIRA
 
-We want to help you run, test, and contribute to **NIYAMLENS: See the Rule. Understand Its Impact.**
+We want to help you run, test, and contribute to **MIRA: See the Rules. Understand the Structure.**
 
 ---
 
@@ -31,4 +31,4 @@ Before opening an issue or seeking help, check the project documentation:
 * **GitHub Repository:** [https://github.com/ut3av/ImpactLab](https://github.com/ut3av/ImpactLab)
 * **Official Track 1 Reference:** [Bhopal Impact Lab 2026 Problem Statements](https://github.com/Vishal4742/bhopal-impact-lab-2026-problem-statements/blob/main/track-1-bhumi-vikas-sahayak/PROBLEM-STATEMENT.md)
 
-*Note: NIYAMLENS is an open-source development prototype created during the Claude Impact Lab 2026 hackathon. We do not maintain dedicated 24/7 commercial support or call centers.*
+*Note: MIRA is an open-source development prototype created during the Claude Impact Lab 2026 hackathon. We do not maintain dedicated 24/7 commercial support or call centers.*

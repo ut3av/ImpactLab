@@ -1,8 +1,8 @@
-# Contributing to NIYAMLENS
+# Contributing to MIRA
 
-Thank you for your interest in contributing to **NIYAMLENS: See the Rule. Understand Its Impact.**
+Thank you for your interest in contributing to **MIRA: See the Rules. Understand the Structure.**
 
-NIYAMLENS is an open-source regulatory intelligence tool developed for building-permission clerks at the Bhopal Municipal Corporation. We welcome contributions that improve regulatory fidelity, calculation accuracy, bilingual understanding, and user experience.
+MIRA is an open-source regulatory intelligence tool developed for building-permission clerks at the Bhopal Municipal Corporation. We welcome contributions that improve regulatory fidelity, calculation accuracy, bilingual understanding, and user experience.
 
 ---
 
@@ -87,7 +87,7 @@ Before writing code or proposing changes, keep these core design principles in m
 
 ## 4. Contributing Rules or Calculations
 
-Because NIYAMLENS serves regulatory decision-support, additions or modifications to rules and calculation engines follow strict quality criteria:
+Because MIRA serves regulatory decision-support, additions or modifications to rules and calculation engines follow strict quality criteria:
 
 ### Adding or Modifying a Rule Table
 1. **Identify the Source:** Cite the exact Rule number, Sub-rule, and PDF page from `resources/MP_Bhumi_Vikas_Rules_2012_upto_2025-03-06_EN.pdf`.

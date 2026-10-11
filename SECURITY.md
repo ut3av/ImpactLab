@@ -2,7 +2,7 @@
 
 ## 1. Overview and Security Principles
 
-NIYAMLENS is an open-source regulatory decision-support prototype. Because it serves municipal building-permission clerks and citizens, data integrity, credential safety, and regulatory provenance are vital:
+MIRA is an open-source regulatory decision-support prototype. Because it serves municipal building-permission clerks and citizens, data integrity, credential safety, and regulatory provenance are vital:
 
 1. **Zero Secret Leakage:** Artificial intelligence inference keys (e.g., `CEREBRAS_API_KEY`) and server credentials must strictly remain server-side. They must never be bundled into client-side single-page applications or committed to source control.
 2. **Deterministic Source Verification:** Legal calculations and citations are bound to verified text. LLMs are prohibited from inventing numerical regulations.
@@ -25,7 +25,7 @@ We appreciate responsible security disclosure. If you discover a vulnerability o
 ### Preferred Reporting Channel
 - **GitHub Private Vulnerability Reporting:** If enabled on the repository (`https://github.com/ut3av/ImpactLab/security/advisories/new`), submit an advisory directly through GitHub.
 - **Maintainer Contact Placeholder:** Alternatively, contact the maintainer directly:
-  `[MAINTAINER_SECURITY_EMAIL_PLACEHOLDER: ut3av.rv@gmail.com]` with the subject line `[SECURITY] NIYAMLENS Vulnerability Report`.
+  `[MAINTAINER_SECURITY_EMAIL_PLACEHOLDER: ut3av.rv@gmail.com]` with the subject line `[SECURITY] MIRA Vulnerability Report`.
 
 ### What to Include in Your Report
 Please provide:
