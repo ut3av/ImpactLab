@@ -540,7 +540,11 @@
       }
 
       window.launchWorkspace = function () {
-        window.location.href = 'http://localhost:5173/workbench';
+        if (window.location.port === '5173' || window.location.pathname.includes('landing')) {
+          window.location.href = '/';
+        } else {
+          window.location.href = 'http://localhost:5173/';
+        }
       };
 
       /* ====================================================================
