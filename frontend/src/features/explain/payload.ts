@@ -60,7 +60,7 @@ export function isCalcType(v: unknown): v is CalcType {
   return typeof v === "string" && (CALC_TYPES as readonly string[]).includes(v)
 }
 
-/** Inspector selection key ("calc_type:side", "building", "plot", "road") → explain focus, or null if not explainable. */
+/** Inspector selection key ("calc_type:side", "building", "plot", "road") to an explain focus, or null if not explainable. */
 export function focusFromSelection(selected: string | null | undefined): ExplainFocus | null {
   if (!selected) return null
   if ((ELEMENTS as readonly string[]).includes(selected)) return { element: selected as FocusElement }

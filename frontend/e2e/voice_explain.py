@@ -85,7 +85,7 @@ def main() -> None:
         expect(guide).to_be_visible()
         assert speech(page)["log"] == [], "opening the guide must not speak"
         guide.get_by_role("button", name="Start Guide").click()
-        expect(guide.get_by_text(re.compile(r"Step 1 of 7"))).to_be_visible()
+        expect(guide.get_by_text("Step 1 of 7", exact=True)).to_be_visible()
         s = speech(page)
         assert s["log"] and s["log"][-1]["lang"].startswith("en"), s
         print("ok: guide started; narration in English")
@@ -93,12 +93,12 @@ def main() -> None:
 
         before = speech(page)
         guide.get_by_role("button", name="Next").click()
-        expect(guide.get_by_text(re.compile(r"Step 2 of 7"))).to_be_visible()
+        expect(guide.get_by_text("Step 2 of 7", exact=True)).to_be_visible()
         after = speech(page)
         assert after["cancels"] > before["cancels"], "moving to the next step must cancel the previous narration"
         guide.get_by_role("button", name="Next").click()
         guide.get_by_role("button", name="Next").click()
-        expect(guide.get_by_text(re.compile(r"Step 4 of 7"))).to_be_visible()
+        expect(guide.get_by_text("Step 4 of 7", exact=True)).to_be_visible()
         shot(page, "11-guide-step4-viewport")
         guide.get_by_role("button", name="Pause Voice").click()
         expect(guide.get_by_role("button", name="Resume Voice")).to_be_visible()
@@ -106,10 +106,10 @@ def main() -> None:
         guide.get_by_role("button", name="Stop Voice").click()
         assert speech(page)["queued"] == 0, "Stop Voice must silence narration"
         guide.get_by_role("button", name="Previous").click()
-        expect(guide.get_by_text(re.compile(r"Step 3 of 7"))).to_be_visible()
+        expect(guide.get_by_text("Step 3 of 7", exact=True)).to_be_visible()
         guide.get_by_role("button", name="Previous").focus()
         page.keyboard.press("ArrowRight")
-        expect(guide.get_by_text(re.compile(r"Step 4 of 7"))).to_be_visible()
+        expect(guide.get_by_text("Step 4 of 7", exact=True)).to_be_visible()
         guide.get_by_role("button", name="Play Voice").click()
         guide.get_by_role("button", name="Close Guide").click()
         expect(guide).to_be_hidden()
@@ -128,7 +128,7 @@ def main() -> None:
         print("ok: answer 3.6 m; rule drawer opened")
 
         # 6-7. Explain with AI (no key on the server -> labelled basic explanation).
-        insp.get_by_role("button", name="Explain this result with AI").click()
+        insp.get_by_role("button", name="Explain with AI: this result").click()
         expect(insp.get_by_text(re.compile(r"Basic explanation|AI explanation")).first).to_be_visible(timeout=20000)
         expect(insp.get_by_text(re.compile(r"Official source text")).first).to_be_visible()
         expect(insp.get_by_text(re.compile(r"PDF p\. 77")).first).to_be_visible()
@@ -150,7 +150,7 @@ def main() -> None:
         expect(insp.get_by_text("Rule-to-geometry results")).to_be_visible(timeout=15000)
         page.get_by_role("button", name="Plan", exact=True).click()
         page.get_by_role("button", name="Front open space ≥ 3 m, rule 56(1)(a)").click()
-        insp.get_by_role("button", name="Explain the selected constraint with AI").click()
+        insp.get_by_role("button", name="Explain with AI: selected constraint").click()
         expect(insp.get_by_text(re.compile(r"Front open space")).first).to_be_visible(timeout=20000)
         print("ok: selected constraint explained")
         shot(page, "13-explain-constraint")

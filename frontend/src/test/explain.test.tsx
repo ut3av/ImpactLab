@@ -143,7 +143,7 @@ const liveRegion = () => inspector().querySelector<HTMLElement>("[data-explain-p
 
 async function ask(user: ReturnType<typeof userEvent.setup>, text = "front open space 10 m street 9 m tall house") {
   await user.type(screen.getByLabelText("Question in English or Hindi"), `${text}{Enter}`)
-  return within(inspector()).findByRole("button", { name: "Explain this result with AI" })
+  return within(inspector()).findByRole("button", { name: "Explain with AI: this result" })
 }
 
 async function evaluateExample(user: ReturnType<typeof userEvent.setup>) {
@@ -233,7 +233,7 @@ describe("Explain with AI: requests", () => {
     const insp = within(inspector())
     expect(insp.getByText("Front open space ≥ 3 m — Rule 56(1)(a)")).toBeInTheDocument()
     const scroll = vi.spyOn(Element.prototype, "scrollIntoView")
-    const btn = insp.getByRole("button", { name: "Explain the selected constraint with AI" })
+    const btn = insp.getByRole("button", { name: "Explain with AI: selected constraint" })
     expect(btn).toHaveTextContent("Explain with AI")
     await user.click(btn)
     await within(panel()).findByText(aiEn.summary)
@@ -255,7 +255,7 @@ describe("Explain with AI: requests", () => {
     const { fetch, user } = setup({ explain: (req) => (req.focus ? { body: { ...aiEn, target: { kind: "calculation", label: "Rear open space explained", status: "VERIFIED" } } } : first.promise) })
     await evaluateExample(user)
     const insp = within(inspector())
-    await user.click(insp.getByRole("button", { name: "Explain this result with AI" }))
+    await user.click(insp.getByRole("button", { name: "Explain with AI: this result" }))
     const calcBtn = insp.getByRole("button", { name: "Explain this calculation: Minimum rear open space" })
     expect(calcBtn).toHaveTextContent("Explain this calculation")
     await user.click(calcBtn)
@@ -552,7 +552,7 @@ describe("Explain with AI: placement", () => {
     const props = { record, selected: null, onSelect: () => {}, onReceipt: () => {}, error: null, loading: false }
     const { rerender, container } = render(<RegulationInspector {...props} aiConfigured={false} />)
     const note = screen.getByText("Live AI is not configured on this server; a basic explanation from the verified data is shown.")
-    expect(screen.getByRole("button", { name: "Explain this result with AI" })).toHaveAttribute("aria-describedby", note.id)
+    expect(screen.getByRole("button", { name: "Explain with AI: this result" })).toHaveAttribute("aria-describedby", note.id)
     expect(container.querySelector('[data-guide="warnings"]')).not.toBeNull()
     expect(container.querySelector('[data-guide="missing"]')).not.toBeNull()
     rerender(<RegulationInspector {...props} aiConfigured />)

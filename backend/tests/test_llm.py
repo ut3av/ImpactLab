@@ -88,3 +88,67 @@ def test_health_never_leaks_key():
     assert "test-key-not-real" not in body
     assert tc.get("/api/health").json()["ai_configured"] is True
     tc.__exit__(None, None, None)
+
+
+# ---------------------------------------------------------------------- explain helpers (POST /api/explain)
+def test_classify_error_by_name_and_status():
+    from app.services.llm import classify_error
+
+    def err(name, **attrs):
+        e = type(name, (Exception,), {})("x")
+        for k, v in attrs.items():
+            setattr(e, k, v)
+        return e
+
+    assert classify_error(err("APITimeoutError")) == "timeout"
+    assert classify_error(TimeoutError()) == "timeout"
+    assert classify_error(err("RateLimitError")) == "rate_limited"
+    assert classify_error(err("APIStatusError", status_code=429)) == "rate_limited"
+    assert classify_error(err("APIConnectionError")) == "network"
+    assert classify_error(ConnectionResetError()) == "network"
+    assert classify_error(err("PermissionDeniedError")) == "auth"
+    assert classify_error(err("APIStatusError", status_code=401)) == "auth"
+    assert classify_error(err("NotFoundError")) == "model_unavailable"
+    assert classify_error(type("BadRequestError", (Exception,), {})("model 'x' does not exist")) == "model_unavailable"
+    assert classify_error(type("BadRequestError", (Exception,), {})("bad max tokens")) == "unavailable"
+    assert classify_error(ValueError("other")) == "unavailable"
+
+
+def test_chat_json_result_returns_reason_without_shared_state():
+    llm = LLMClient(make_settings(cerebras_api_key="test-key-not-real"))
+    llm._client = SimpleNamespace(chat=SimpleNamespace(completions=FakeCompletions([type("RateLimitError", (Exception,), {})(), "no json", '{"a": 1}'])))
+    assert llm._chat_json_result("s", "u") == (None, "rate_limited")
+    assert llm._chat_json_result("s", "u") == (None, "invalid_response")
+    assert llm._chat_json_result("s", "u") == ({"a": 1}, None)
+    assert llm.last_error is None
+    assert LLMClient(make_settings())._chat_json_result("s", "u") == (None, "not_configured")
+    assert LLMClient(make_settings()).explain_sections({}, "en", "brief", [], "", set()) == (None, "not_configured")
+
+
+def test_rule_refs():
+    from app.services.llm import rule_refs
+
+    assert rule_refs("Rule 56(1)(a), Rules 21 and 57, R52, नियम 2(38), Rule 26-B, Rule 12A") == {"56", "21", "57", "52", "2", "26-B", "12-A"}
+    assert rule_refs("Rule 56 and 12.5 m; Rule 42 Table 4 or 5") == {"56", "42"}
+    assert rule_refs("for 56, per 3, Rs. 750, sector 9, 3.6 m") == set()
+
+
+def test_approval_claims():
+    from app.services.llm import approval_claim
+
+    for claim in ("The plan is approved.", "The building is fully compliant.", "It complies with Rule 56.",
+                  "Your building is legal.", "This plan will be permitted.", "नक्शा स्वीकृत है।"):
+        assert approval_claim(claim), claim
+    for ok in ("This does not mean the plan is approved.", "MIRA cannot say whether it is approved.",
+               "It does not comply with Rule 56.", "The building must comply with Rule 56.",
+               "The gap meets this minimum.", "यह नहीं कहा जा सकता कि नक्शा स्वीकृत है।"):
+        assert not approval_claim(ok), ok
+
+
+def test_explain_output_normalised():
+    from app.services.llm import ExplainSectionsOut
+
+    out = ExplainSectionsOut.model_validate({"summary": "  **Leave** `3.6 m`\n- at the front (E1). ", "meaning": "N/A",
+                                             "calculation": ["Step one.", "Step two."], "uncertainty": "none", "x": 1})
+    assert out.summary == "Leave 3.6 m at the front." and out.meaning is None and out.uncertainty is None
+    assert out.calculation == "Step one. Step two." and out.citations == []

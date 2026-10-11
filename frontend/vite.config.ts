@@ -16,5 +16,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     css: false,
+    // Whole-app journeys (typing, routing, narration) exceed the 5 s default on slower CI runners.
+    testTimeout: 20_000,
   },
 })

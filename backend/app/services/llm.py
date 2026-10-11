@@ -37,7 +37,7 @@ class TermsOut(BaseModel):
 
 # ---------------------------------------------------------------------- /api/explain output
 _EMPHASIS = re.compile(r"\*\*|__|`")
-_BULLET = re.compile(r"^\s*[-*•·]+\s+")
+_BULLET = re.compile(r"^\s*[-*" + chr(0x2022) + chr(0xB7) + r"]+\s+")  # -, *, bullet, middle dot
 _EVIDENCE_TAG = re.compile(r"\s*[\[(]\s*E\d{1,2}(?:\s*[,;/]\s*E\d{1,2})*\s*[\])]")
 _ABSENT = {"", "null", "none", "n/a", "na", "-"}
 
@@ -208,7 +208,7 @@ class LLMClient:
             return None, "not_configured"
         brief = detail == "brief"
         data, reason = self._chat_json_result(explain_system_prompt(language, detail),
-                                              json.dumps(payload, ensure_ascii=False), max_tokens=900 if brief else 1500)
+                                              json.dumps(payload, ensure_ascii=False), max_tokens=1600 if brief else 2400)
         if data is None:
             return None, reason or "unavailable"
         try:

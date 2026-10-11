@@ -1,5 +1,5 @@
 import { Box, Crosshair, Eye, LayoutGrid, RotateCcw } from "lucide-react"
-import { Component, lazy, Suspense, useMemo, useRef, useState, type ReactNode } from "react"
+import { Component, lazy, memo, Suspense, useMemo, useRef, useState, type ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { ZONE_COLORS, type SceneModel } from "@/lib/geometry"
@@ -30,7 +30,8 @@ class SceneBoundary extends Component<{ fallback: ReactNode; children: ReactNode
 
 type Props = { model: SceneModel; selected: string | null; onSelect: (k: string | null) => void }
 
-export function PlotViewport({ model, selected, onSelect }: Props) {
+/** Memoised: Voice Guide and narration updates in the Workbench must never re-render or remount the 3D scene. */
+export const PlotViewport = memo(function PlotViewport({ model, selected, onSelect }: Props) {
   const reduced = useReducedMotion()
   const canWebgl = useMemo(webglAvailable, [])
   const [mode, setMode] = useState<"3d" | "plan">(canWebgl ? "3d" : "plan")
@@ -82,7 +83,7 @@ export function PlotViewport({ model, selected, onSelect }: Props) {
       </div>
     </div>
   )
-}
+})
 
 function EmptyPlot() {
   return (

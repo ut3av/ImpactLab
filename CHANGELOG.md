@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Voice Guide:** a bilingual (English / Hindi) seven-step walkthrough of the real interface, opened from the header's "Voice Guide" button.
+  - Context-aware, built from application state. "Explain current screen" covers the selected constraint, the calculation or the answer on screen.
+  - A restrained highlight for the region being explained.
+  - Text controls (Start Guide, Previous, Next, Play/Pause/Resume Voice, Replay, Stop Voice, Close Guide) and keyboard navigation.
+  - Non-modal: it never traps focus.
+  - Narration is cancelled on step change and on close.
+- **Explain with AI:** `POST /api/explain` plus inspector entry points for the whole result, the selected 3D or plan constraint, and each calculation.
+  - The client sends identifiers only. The server rebuilds every passage, value, status and warning from its own data.
+  - The model receives only the minimum relevant context.
+  - Output is schema-validated and grounding-checked: markup, unknown evidence ids, numbers or rule references outside the context, approval or compliance claims, and wrong language are all rejected.
+  - A labelled bilingual basic explanation is used when AI is unavailable, fails or is rejected, and always for `NOT_FOUND`.
+  - The 28 Aug 2026 amendment warning is always preserved.
+  - Concise by default, with "Show more detail".
+- **Read Aloud:** narrates exactly the displayed explanation, with Pause, Resume, Stop and Replay.
+- **Shared speech engine** (`frontend/src/lib/speech`), built on the browser Web Speech API:
+  - one utterance at a time; generation tokens drop stale callbacks;
+  - sentence-level segments;
+  - voice choice by `hi-IN` / `en-IN` metadata, with late-loading voices, missing Hindi voices and unsupported browsers handled.
+  - No microphone or recording.
+- **Rate limiting** for explanation model calls: in-memory sliding window, per client and global (`EXPLAIN_RATE_PER_MINUTE`, `EXPLAIN_GLOBAL_RATE_PER_MINUTE`).
+- **Tests:**
+  - backend `test_explain.py` and `test_ratelimit.py`;
+  - frontend `speech.test.ts`, `guide.test.tsx`, `explain.test.tsx` and the 13-step `journey.test.tsx`;
+  - browser journey `frontend/e2e/voice_explain.py` (injected speech recorder and microphone tripwire).
 - **Core Rule Store & Page Parser:** In-memory loader (`backend/app/rules/loader.py`) for `bhumi_vikas_rules.jsonl` (106 records) and `bhumi_vikas_rules_fulltext_by_page.txt` (108 pages). Splits text into 787 passages mapped accurately to original PDF pages using running headers.
 - **Embedded Rule Detection:** Support for inserted rules (12-A, 17-a, 25(A), 26-A, 42-A, 93(a)) physically located inside parent rule text records.
 - **Self-Verifying Rule Tables:** Startup validation in `backend/app/rules/verified_tables.py` for Rule 56 (Table 4 setbacks), Rule 21 (permission fees), Rule 52 (electrical line clearances), Rule 42 (high-rise open spaces), and Rule 2(38) definitions.

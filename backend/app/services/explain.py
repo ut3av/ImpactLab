@@ -47,7 +47,7 @@ from app.services.answer import (
     derive_statuses,
     rule_label,
 )
-from app.services.extraction import extract
+from app.services.extraction import DEVANAGARI_DIGITS, extract
 from app.services.llm import ExplainSectionsOut, LLMClient, rule_refs
 from app.services.ratelimit import SlidingWindowLimiter
 from app.services.retrieval import Retriever
@@ -55,6 +55,7 @@ from app.services.retrieval import Retriever
 log = logging.getLogger("mira.explain")
 
 PASSAGE_CHARS, ELEMENT_PASSAGE_CHARS = 1200, 600
+ARROW, TIMES = chr(0x2192), chr(0xD7)  # glyphs used in engine step text
 COMPUTED = (Status.VERIFIED, Status.CALCULATION_COMPLETED)
 # An element selected with nothing else evaluated is explained against the calculations the 3D scene draws for it.
 ELEMENT_DEFAULT_CALC = {"building": "site_open_spaces", "plot": "site_open_spaces", "road": "front_open_space"}
@@ -264,11 +265,10 @@ def hi_m(v: float) -> str:
 
 
 def clip(text: str, limit: int) -> str:
-    text = text.strip()
+    text = "\n".join(" ".join(ln.split()) for ln in text.strip().splitlines())
     if len(text) <= limit:
         return text
-    cut = text[:limit].rsplit(None, 1)[0]
-    return cut + " ..."
+    return text[:limit - 4].rsplit(None, 1)[0] + " ..."  # cut at a word so no number is split
 
 
 def top_rule(rule: str) -> str | None:
@@ -289,7 +289,7 @@ def _lc(s: str) -> str:
 
 def _plain(step: str) -> str:
     """Engine step text without arrow/multiplication glyphs (they read badly aloud)."""
-    return step.replace(" → ", ", so ").replace("→", " so ").replace(" × ", " times ")
+    return step.replace(f" {ARROW} ", ", so ").replace(ARROW, " so ").replace(f" {TIMES} ", " times ")
 
 
 def _hi_words(text: str) -> str:
@@ -547,7 +547,7 @@ class ExplainService:
                 for c in ctx.focus_calcs if not c.zones]
             payload["facts"] = _Basic(ctx, en=True).building_facts()
         else:
-            payload["calculations"] = [self._calc_fact(c) for c in ctx.focus_calcs]
+            payload["calculations"] = [self._calc_fact(c, zones=ctx.zone is None) for c in ctx.focus_calcs]
             if ctx.zone:
                 payload["selected_zone"] = self._zone_fact(ctx.focus_calcs[0], ctx.zone)
         payload["missing_inputs"] = [{"label": m.label, "reason": m.reason} for m in ctx.focus_missing]
@@ -559,14 +559,14 @@ class ExplainService:
         return payload, [e["id"] for e in evidence], allowed_text, allowed_rules
 
     @staticmethod
-    def _calc_fact(c: CalcResult) -> dict:
+    def _calc_fact(c: CalcResult, zones: bool = True) -> dict:
         d = {
             "label": c.label, "status": c.status.value, "display_value": c.display_value, "inputs_used": c.inputs_used,
             "steps": c.steps, "conditions": c.conditions, "notes": c.notes,
             "conditional_results": [f"{r.condition}: {r.result} (Rule {r.rule})" for r in c.conditional_results],
             "schedule": c.summary_en if not c.display_value else None,
             "missing": [m.label for m in c.missing_inputs],
-            "zones": [ExplainService._zone_fact(c, z) for z in c.zones],
+            "zones": [ExplainService._zone_fact(c, z) for z in c.zones] if zones else None,
         }
         return {k: v for k, v in d.items() if v not in (None, [], {})}
 
@@ -588,7 +588,7 @@ class ExplainService:
 
     def _ai_response(self, ctx: Trusted, out: ExplainSectionsOut) -> ExplainResponse:
         texts = {k: getattr(out, k) for k in SECTION_ORDER}
-        if ctx.amendment and "2026" not in (texts["uncertainty"] or "").translate(str.maketrans("०१२३४५६७८९", "0123456789")):
+        if ctx.amendment and "2026" not in (texts["uncertainty"] or "").translate(DEVANAGARI_DIGITS):
             vs = VERSION_SENTENCE[ctx.hi]
             texts["uncertainty"] = f"{texts['uncertainty']} {vs}" if texts["uncertainty"] else vs
         sections = [ExplainSection(key=k, text=v) for k, v in texts.items() if v]
@@ -804,8 +804,12 @@ class _Basic:
                     parts.append(self.calc_phrase(calc))
         else:
             parts += [self.calc_phrase(x) for x in c.focus_calcs[:3]]
-            if not c.focus_calcs:
-                parts.append(self.source_found() or "")
+            src = (c.evidence or c.citations or [None])[0]
+            if not c.focus_calcs and src:
+                parts.append(self.t(f"MIRA found the relevant supplied text in Rule {src.rule}{src.sub_rule or ''} (PDF p. "
+                                    f"{src.page}) but has not applied it to this case.",
+                                    f"MIRA को संबंधित नियम पाठ नियम {src.rule}{src.sub_rule or ''} (PDF पृष्ठ {src.page}) में "
+                                    "मिला है, पर उसने इसे इस मामले पर लागू नहीं किया है।"))
         if c.amendment:
             parts.append(self.t("Version review needed: the rulebook is consolidated only up to 6 March 2025.",
                                 "संस्करण समीक्षा आवश्यक: नियम-संग्रह केवल 6 मार्च 2025 तक समेकित है।"))
@@ -858,7 +862,7 @@ class _Basic:
 
     def selection(self, x: CalcResult) -> str | None:
         """The rule-selection step: the engine's English step, or a fixed Hindi sentence for the same branch."""
-        step = next((s for s in x.steps if "→ Rule" in s or "refers to Rule" in s), None)
+        step = next((s for s in x.steps if f"{ARROW} Rule" in s or "refers to Rule" in s), None)
         if step is None:
             return None
         if not self.hi:
@@ -904,7 +908,7 @@ class _Basic:
             tag = self.t(", PDF-verified table", ", PDF से सत्यापित तालिका") if e.verified_table else ""
             items.append(self.t(f"Rule {e.rule}{e.sub_rule or ''} — {e.title} (PDF p. {e.page}{tag})",
                                 f"नियम {e.rule}{e.sub_rule or ''} — {e.title} (PDF पृष्ठ {e.page}{tag})"))
-        return self.t("Sources: ", "स्रोत: ") + "; ".join(items) + self.t(".", "।")
+        return self.t("Sources: ", "स्रोत: ") + "; ".join(dict.fromkeys(items)) + self.t(".", "।")
 
     def calculation(self) -> str | None:
         out: list[str] = []
@@ -967,9 +971,9 @@ class _Basic:
                 items = [f"{_lc(r.condition)}: {r.result} (Rule {r.rule})" for r in conds]
                 out.append("Until then, the result depends on the case: " + "; ".join(items) + ".")
         if not c.focus_calcs and c.target.kind in ("result", "calculation"):
-            out.append(self.t("MIRA has located the source text but has not applied it to this case, so there is no "
-                              "computed value.",
-                              "MIRA ने स्रोत पाठ खोजा है, पर इसे इस मामले पर लागू करके कोई निष्कर्ष नहीं निकाला है।"))
+            out.append(self.t("There is no computed value or conclusion here; the answer depends on reading the quoted "
+                              "rule text.",
+                              "यहां कोई गणना किया गया मान या निष्कर्ष नहीं है; उत्तर उद्धृत नियम पाठ पढ़कर ही मिलेगा।"))
         for w in c.warnings:
             if w.code.startswith("AMENDMENT"):
                 out.append(VERSION_SENTENCE[hi] if hi or brief else f"{w.title}. {w.detail}")

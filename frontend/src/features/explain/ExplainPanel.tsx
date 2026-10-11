@@ -132,9 +132,9 @@ export function ExplainPanel({ explanation, language, onLanguage, pendingLabel, 
                   {l === "en" ? (
                     "English"
                   ) : (
-                    <>
+                    <span>
                       Hindi (<span lang="hi">हिन्दी</span>)
-                    </>
+                    </span>
                   )}
                 </Button>
               ))}

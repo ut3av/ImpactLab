@@ -47,7 +47,7 @@ export const explanationCache = new LruCache<ExplainResponse>(CACHE_MAX)
 
 export type Explanation = {
   state: ExplainState
-  /** Start (or switch to) an explanation. Same request already loading/shown → ignored unless forced. */
+  /** Start (or switch to) an explanation. The same request already loading or shown is ignored unless forced. */
   request: (req: ExplainRequest, opts?: { force?: boolean }) => void
   /** Abort any request in flight and return to idle. */
   reset: () => void

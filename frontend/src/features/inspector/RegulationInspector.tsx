@@ -111,7 +111,7 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
           <ExplainButton
             ref={mainExplain}
             label="Explain with AI"
-            ariaLabel="Explain this result with AI"
+            ariaLabel="Explain with AI: this result"
             busy={busyFocus === "result"}
             onClick={() => explain(null, false)}
             describedBy={aiConfigured === false ? aiNoteId : undefined}
@@ -526,7 +526,7 @@ function SelectionNote({
           <ExplainButton
             tone="secondary"
             label="Explain with AI"
-            ariaLabel="Explain the selected constraint with AI"
+            ariaLabel="Explain with AI: selected constraint"
             busy={explainBusy}
             onClick={onExplain}
             className="no-print mt-2 bg-paper"

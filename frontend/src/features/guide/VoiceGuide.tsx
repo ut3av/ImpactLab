@@ -19,6 +19,8 @@ const STEP_TITLE_ID = `${GUIDE_PANEL_ID}-step-title`
 const LANG_ID = `${GUIDE_PANEL_ID}-language`
 const DISABLED = "aria-disabled:cursor-not-allowed aria-disabled:opacity-45 aria-disabled:hover:bg-transparent"
 const FOCUS = "outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-1"
+/** Letter-spacing and small mono caps break Devanagari conjuncts; Hindi labels use normal spacing. */
+const HI_LABEL = "font-sans text-[12px] tracking-normal"
 
 type Phase = "intro" | "steps" | "context"
 
@@ -52,7 +54,7 @@ export function VoiceGuide({ ctx, onClose }: Props) {
   const full = useMemo<GuideContext>(() => ({ ...ctx, webgl }), [ctx, webgl])
   const [phase, setPhase] = useState<Phase>("intro")
   const [index, setIndex] = useState(0)
-  const [side, setSide] = useState<"left" | "right">("left")
+  const [side, setSide] = useState<"left" | "right">("right")
   const n = useNarration(OWNER)
   /** Narrate each newly shown step; on after Start / Play / Replay, off after Stop or when another narration takes over. */
   const auto = useRef(false)
@@ -150,12 +152,12 @@ export function VoiceGuide({ ctx, onClose }: Props) {
     }
   }
 
-  // Desktop: sit at the bottom-left unless the highlighted region is on the left half.
+  // Desktop: sit at the bottom-right (clear of the sticky Evaluate buttons) unless the highlighted region is on the right half.
   const onBox = useCallback((b: HighlightBox | null) => {
-    setSide(b && b.left + b.width / 2 < window.innerWidth / 2 ? "right" : "left")
+    setSide(b && b.left + b.width / 2 >= window.innerWidth / 2 ? "left" : "right")
   }, [])
   const targets = step?.highlight ?? []
-  const panelSide = targets.length ? side : "left"
+  const panelSide = targets.length ? side : "right"
 
   let audioNote: string | null = null
   if (!n.supported || n.error?.code === "unsupported") audioNote = t.unsupported
@@ -182,7 +184,7 @@ export function VoiceGuide({ ctx, onClose }: Props) {
       )}
     >
       <div className="flex items-center justify-between gap-2 border-b px-4 py-2">
-        <h2 id={TITLE_ID} ref={headingRef} tabIndex={-1} className={cn("panel-label rounded-sm text-cobalt!", FOCUS)}>
+        <h2 id={TITLE_ID} ref={headingRef} tabIndex={-1} className={cn("panel-label rounded-sm text-cobalt!", lang === "hi" && HI_LABEL, FOCUS)}>
           {t.title}
         </h2>
         <Button type="button" size="xs" variant="ghost" onClick={close}>
@@ -234,7 +236,7 @@ export function VoiceGuide({ ctx, onClose }: Props) {
             <article aria-labelledby={STEP_TITLE_ID} className="space-y-2.5 border-t pt-3">
               {phase === "steps" ? (
                 <div className="space-y-1.5">
-                  <p className="font-mono text-[11px] text-muted-foreground">{t.progress(index + 1, TOTAL)}</p>
+                  <p className={cn("text-[11px] text-muted-foreground", lang === "hi" ? "font-sans" : "font-mono")}>{t.progress(index + 1, TOTAL)}</p>
                   <div aria-hidden="true" className="flex gap-1">
                     {GUIDE_STEPS.map((_, i) => (
                       <span key={i} className={cn("h-1 flex-1 rounded-full", i <= index ? "bg-cobalt" : "bg-rule-line")} />
@@ -242,7 +244,7 @@ export function VoiceGuide({ ctx, onClose }: Props) {
                   </div>
                 </div>
               ) : (
-                <p className="panel-label">{t.currentScreen}</p>
+                <p className={cn("panel-label", lang === "hi" && HI_LABEL)}>{t.currentScreen}</p>
               )}
               <h3 id={STEP_TITLE_ID} ref={stepHeadingRef} tabIndex={-1} className={cn("rounded-sm text-[15px] leading-snug font-semibold text-ink", FOCUS)}>
                 {step.title}
@@ -254,7 +256,7 @@ export function VoiceGuide({ ctx, onClose }: Props) {
               ))}
               {step.example && (
                 <div className="rounded-sm border border-cobalt/30 bg-cobalt-soft/60 p-2.5">
-                  <p className="panel-label text-cobalt!">{t.tryThis}</p>
+                  <p className={cn("panel-label text-cobalt!", lang === "hi" && HI_LABEL)}>{t.tryThis}</p>
                   <p lang={/[ऀ-ॿ]/.test(step.example) ? "hi" : "en"} className="mt-1 text-[13px] leading-relaxed text-ink">
                     {step.example}
                   </p>
