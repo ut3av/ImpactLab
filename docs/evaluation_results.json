@@ -1,0 +1,371 @@
+[
+  {
+    "n": 1,
+    "question": "My house faces a 10 m wide street and will be 9 m tall. How much open space do I leave at the front?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "CALCULATION_COMPLETED",
+    "statuses": [
+      "CALCULATION_COMPLETED",
+      "VERIFIED"
+    ],
+    "rules_cited": [
+      "56 (p.77)",
+      "56 (p.80)"
+    ],
+    "calculations": [
+      "Minimum front open space: 3.6 m [VERIFIED]"
+    ],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Minimum front open space: 3.6 m (Rule 56(1)(a), PDF p. 77)."
+  },
+  {
+    "n": 2,
+    "question": "I want a farm house on agricultural land. What is the minimum plot size and the maximum FAR?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "17 (p.34)",
+      "53 (p.71)",
+      "2 (p.6)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 17 — Permission of farm House (PDF p. 34). Read the quoted passage below. Also see Rule 53. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 3,
+    "question": "My development permission was granted in 2023. How long does it stay valid, and how many times can I renew it?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "23 (p.41)",
+      "13 (p.22)",
+      "12 (p.20)",
+      "2 (p.4)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 23 — Duration of sanction (PDF p. 41). Read the quoted passage below. Also see Rule 13. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 4,
+    "question": "I applied for building permission and the authority has not replied. What happens if they miss the deadline?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "28 (p.48)",
+      "28 (p.49)",
+      "27 (p.48)",
+      "23 (p.41)",
+      "35 (p.52)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 28 — Limitation period for grant or refusal of permission (PDF p. 48). Read the quoted passage below. Also see Rule 23, 27. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 5,
+    "question": "How far must my balcony stay from a low-voltage overhead electric line, vertically and horizontally?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "CALCULATION_COMPLETED",
+    "statuses": [
+      "CALCULATION_COMPLETED",
+      "VERIFIED"
+    ],
+    "rules_cited": [
+      "52 (p.69)"
+    ],
+    "calculations": [
+      "Minimum distance from overhead electric line: Vertically 2.5 m · Horizontally 1.2 m [VERIFIED]"
+    ],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Minimum distance from overhead electric line: Vertically 2.5 m · Horizontally 1.2 m (Rule 52(1), PDF p. 69)."
+  },
+  {
+    "n": 6,
+    "question": "Who is allowed to sign and submit my building plans?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "18 (p.34)",
+      "26 (p.45)",
+      "26 (p.46)",
+      "35 (p.51)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 18 — Preparation and signing of plans (PDF p. 34). Read the quoted passage below. Also see Rule 26. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 7,
+    "question": "What documents go with an application for building permission?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "16 (p.32)",
+      "16 (p.33)",
+      "14 (p.22)",
+      "14 (p.23)",
+      "16 (p.28)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 16 — Information accompanying application (PDF p. 32). Read the quoted passage below. Also see Rule 14. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 8,
+    "question": "What is the fee for building permission for a residential house?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "MORE_INFORMATION_NEEDED",
+    "statuses": [
+      "MORE_INFORMATION_NEEDED"
+    ],
+    "rules_cited": [
+      "21 (p.36)",
+      "21 (p.35)",
+      "2 (p.8)",
+      "21 (p.37)",
+      "21 (p.38)"
+    ],
+    "calculations": [
+      "Building permission fee: — [MORE_INFORMATION_NEEDED]"
+    ],
+    "missing": [
+      "built_up_area_sqm",
+      "building_height_m"
+    ],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Building permission fee: cannot be determined yet. Information needed: Proposed built-up area (sq m); Proposed building height (m)."
+  },
+  {
+    "n": 9,
+    "question": "Can I change my plan after it is sanctioned?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "24 (p.41)",
+      "24 (p.42)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 24 — Deviation from sanctioned plan (PDF p. 41). Read the quoted passage below. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 10,
+    "question": "What is the minimum rear open space for a 150 sq m residential plot?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "MORE_INFORMATION_NEEDED",
+    "statuses": [
+      "MORE_INFORMATION_NEEDED"
+    ],
+    "rules_cited": [
+      "56 (p.78)"
+    ],
+    "calculations": [
+      "Minimum rear open space: — [MORE_INFORMATION_NEEDED]"
+    ],
+    "missing": [
+      "building_height_m"
+    ],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Minimum rear open space: cannot be determined yet. • If the building is residential and up to 12.5 m high: 1.5 m (plot area row: Above 40.00 and up to 150.00 sq m) (Rule 56(2)(a)). • If the building is higher than 12.5 m: Rule 42 Table 4/5 applies (needs height, storeys, plot area and frontage) (Rule 42). Information needed: Proposed building height (m)."
+  },
+  {
+    "n": 11,
+    "question": "Do I need separate development permission for a 300 sq m plot that matches the Development Plan? (Tip: this changed in August 2026.)",
+    "http": 200,
+    "language": "en",
+    "primary_status": "VERSION_REVIEW_NEEDED",
+    "statuses": [
+      "VERSION_REVIEW_NEEDED",
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "2 (p.4)",
+      "12 (p.20)",
+      "14 (p.22)",
+      "14 (p.25)",
+      "28 (p.48)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [
+      "AMENDMENT_2026_RULE_2_5_C"
+    ],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 2 — Definitions (PDF p. 4). Read the quoted passage below. Also see Rule 12, 14. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 12,
+    "question": "Which rule decides what happens when the Development Plan and these rules disagree?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "103 (p.107)",
+      "22 (p.40)",
+      "13 (p.22)",
+      "37 (p.55)",
+      "2 (p.4)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 103 — Provisions of development plan to take precedence (PDF p. 107). Read the quoted passage below. Also see Rule 13, 22, 37. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 13,
+    "question": "What are the rules for lifts in a building taller than 15 m?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "SOURCE_FOUND",
+    "statuses": [
+      "SOURCE_FOUND"
+    ],
+    "rules_cited": [
+      "83 (p.95)",
+      "83 (p.96)"
+    ],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Most relevant supplied rule: Rule 83 — Provision of Lifts, Escalators or Moving Walks (PDF p. 95). Read the quoted passage below. NIYAMLENS has located the source text but has not applied it to your case."
+  },
+  {
+    "n": 14,
+    "question": "मेरा प्लॉट 200 वर्ग मीटर का है और सामने 9 मीटर चौड़ी सड़क है। आगे कितनी जगह खाली छोड़नी होगी?",
+    "http": 200,
+    "language": "hi",
+    "primary_status": "MORE_INFORMATION_NEEDED",
+    "statuses": [
+      "MORE_INFORMATION_NEEDED"
+    ],
+    "rules_cited": [
+      "56 (p.77)"
+    ],
+    "calculations": [
+      "Minimum front open space: — [MORE_INFORMATION_NEEDED]"
+    ],
+    "missing": [
+      "building_height_m",
+      "building_use"
+    ],
+    "warnings": [
+      "HINDI_TEXT_PREVAILS"
+    ],
+    "answer_source": "template",
+    "answer": "न्यूनतम सामने की खुली जगह: अभी तय नहीं किया जा सकता। • यदि भवन आवासीय है और ऊंचाई 12.5 मीटर तक है: 3 मीटर (सड़क चौड़ाई पंक्ति: 9.0 मीटर तक) (नियम 56(1)(a)). • यदि भवन 12.5 मीटर से ऊंचा है: नियम 42 की तालिका 4/5 लागू (ऊंचाई, मंजिलें, प्लॉट क्षेत्रफल और सामने की चौड़ाई आवश्यक) (नियम 42). आवश्यक जानकारी: भवन की ऊंचाई (मीटर); भवन का उपयोग (आवासीय/वाणिज्यिक आदि)."
+  },
+  {
+    "n": 15,
+    "question": "बिल्डिंग परमिशन की फीस कितनी है और किस नियम में लिखी है?",
+    "http": 200,
+    "language": "hi",
+    "primary_status": "MORE_INFORMATION_NEEDED",
+    "statuses": [
+      "MORE_INFORMATION_NEEDED"
+    ],
+    "rules_cited": [
+      "21 (p.36)",
+      "21 (p.35)",
+      "2 (p.8)",
+      "21 (p.37)"
+    ],
+    "calculations": [
+      "Building permission fee: — [MORE_INFORMATION_NEEDED]"
+    ],
+    "missing": [
+      "built_up_area_sqm",
+      "building_use",
+      "building_height_m"
+    ],
+    "warnings": [
+      "HINDI_TEXT_PREVAILS"
+    ],
+    "answer_source": "template",
+    "answer": "भवन अनुज्ञा शुल्क: अभी तय नहीं किया जा सकता। आवश्यक जानकारी: प्रस्तावित निर्मित क्षेत्र (वर्ग मीटर); भवन का उपयोग (आवासीय/वाणिज्यिक आदि); भवन की ऊंचाई (मीटर)."
+  },
+  {
+    "n": 16,
+    "question": "How do I pay my property tax online?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "NOT_FOUND",
+    "statuses": [
+      "NOT_FOUND"
+    ],
+    "rules_cited": [],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Not found in the supplied rules. The topic (property tax) is outside the M.P. Bhumi Vikas Rules, 2012. Searched the 106 supplied rule records for: pay, property, tax, online."
+  },
+  {
+    "n": 17,
+    "question": "What is the current market rate for land in Kolar Road, Bhopal?",
+    "http": 200,
+    "language": "en",
+    "primary_status": "NOT_FOUND",
+    "statuses": [
+      "NOT_FOUND"
+    ],
+    "rules_cited": [],
+    "calculations": [],
+    "missing": [],
+    "warnings": [],
+    "answer_source": "template",
+    "answer": "Not found in the supplied rules. The topic (land prices or market rates) is outside the M.P. Bhumi Vikas Rules, 2012. Searched the 106 supplied rule records for: current, market, rate, land, kolar, road, bhopal."
+  }
+]

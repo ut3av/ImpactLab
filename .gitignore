@@ -37,3 +37,14 @@ htmlcov/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Node / frontend build
+node_modules/
+frontend/dist/
+frontend/coverage/
+*.tsbuildinfo
+test-results/
+playwright-report/
+
+# Local Claude Code settings
+.claude/settings.local.json

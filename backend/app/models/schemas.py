@@ -138,6 +138,9 @@ class CalcResult(BaseModel):
     conditional_results: list[ConditionalResult] = []
     zones: list[GeometryZone] = []
     breakdown: dict[str, float | str] = {}
+    # Deterministic one-line summaries of the governing table when no single value can be given yet.
+    summary_en: str | None = None
+    summary_hi: str | None = None
 
 
 CalcType = Literal[
