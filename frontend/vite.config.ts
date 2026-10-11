@@ -10,13 +10,6 @@ export default defineConfig({
   server: { proxy: { "/api": "http://127.0.0.1:8000" } },
   build: {
     chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("node_modules/three") || id.includes("@react-three")) return "three"
-        },
-      },
-    },
   },
   test: {
     environment: "jsdom",

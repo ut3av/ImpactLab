@@ -1,0 +1,46 @@
+name: Feature Request
+description: Propose a new calculation module, regulatory feature, or UI enhancement.
+title: "[FEAT]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggest an enhancement or new regulatory feature for NIYAMLENS.
+  - type: textarea
+    id: problem
+    attributes:
+      label: User Problem / Motivation
+      description: What challenge or regulatory scenario does a building-permission clerk face that this feature addresses?
+      placeholder: e.g., Clerks frequently get questions regarding parking space requirements under Rule 84.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature, calculation rule, or visualization you propose.
+    validations:
+      required: true
+  - type: textarea
+    id: regulatory_source
+    attributes:
+      label: Governing Regulatory Source
+      description: Which Rule, Table, or page in the M.P. Bhumi Vikas Rules, 2012 defines this logic?
+      placeholder: e.g., Rule 84, Table 10, PDF pages 96-98
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Impacted Component Scope
+      options:
+        - "Backend: Deterministic Calculation Engine"
+        - "Backend: Retrieval & Rules Store"
+        - "Backend: Cerebras Inference & Prompting"
+        - "Frontend: 3D Rule-to-Geometry Viewport"
+        - "Frontend: Regulation Inspector & Citations"
+        - "Frontend: Counter Receipt"
+        - "Documentation / Testing"
+    validations:
+      required: true

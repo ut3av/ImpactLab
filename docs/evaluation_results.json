@@ -173,7 +173,7 @@
     ],
     "warnings": [],
     "answer_source": "template",
-    "answer": "Building permission fee: cannot be determined yet. Information needed: Proposed built-up area (sq m); Proposed building height (m)."
+    "answer": "Building permission fee (Rule 21(3)(b), PDF p. 36): cannot be determined yet. Schedule: for buildings other than high rise, the residential fee is a flat amount by built-up area slab, from Rs. 750 (0–75 sq m) to Rs. 25,000 (2,001–2,500 sq m) and Rs. 50,000 above 2,500 sq m (Rule 21(3)(b) item 1); high rise residential is Rs. 10.00 per sq m of built-up area (Rule 21(3)(c)); the application fee is Rs. 1.00 per sq m of proposed built-up area (Rule 21(2)(ii)). Information needed: Proposed built-up area (sq m); Proposed building height (m)."
   },
   {
     "n": 9,
@@ -214,7 +214,7 @@
     ],
     "warnings": [],
     "answer_source": "template",
-    "answer": "Minimum rear open space: cannot be determined yet. • If the building is residential and up to 12.5 m high: 1.5 m (plot area row: Above 40.00 and up to 150.00 sq m) (Rule 56(2)(a)). • If the building is higher than 12.5 m: Rule 42 Table 4/5 applies (needs height, storeys, plot area and frontage) (Rule 42). Information needed: Proposed building height (m)."
+    "answer": "Minimum rear open space (Rule 56(2)(a), PDF p. 78): cannot be determined yet. • If the building is residential and up to 12.5 m high: 1.5 m (plot area row: Above 40.00 and up to 150.00 sq m) (Rule 56(2)(a)). • If the building is higher than 12.5 m: Rule 42 Table 4/5 applies (needs height, storeys, plot area and frontage) (Rule 42). Information needed: Proposed building height (m)."
   },
   {
     "n": 11,
@@ -305,7 +305,7 @@
       "HINDI_TEXT_PREVAILS"
     ],
     "answer_source": "template",
-    "answer": "न्यूनतम सामने की खुली जगह: अभी तय नहीं किया जा सकता। • यदि भवन आवासीय है और ऊंचाई 12.5 मीटर तक है: 3 मीटर (सड़क चौड़ाई पंक्ति: 9.0 मीटर तक) (नियम 56(1)(a)). • यदि भवन 12.5 मीटर से ऊंचा है: नियम 42 की तालिका 4/5 लागू (ऊंचाई, मंजिलें, प्लॉट क्षेत्रफल और सामने की चौड़ाई आवश्यक) (नियम 42). आवश्यक जानकारी: भवन की ऊंचाई (मीटर); भवन का उपयोग (आवासीय/वाणिज्यिक आदि)."
+    "answer": "न्यूनतम सामने की खुली जगह (नियम 56(1)(a), PDF पृष्ठ 77): अभी तय नहीं किया जा सकता। • यदि भवन आवासीय है और ऊंचाई 12.5 मीटर तक है: 3 मीटर (सड़क चौड़ाई पंक्ति: 9.0 मीटर तक) (नियम 56(1)(a)). • यदि भवन 12.5 मीटर से ऊंचा है: नियम 42 की तालिका 4/5 लागू (ऊंचाई, मंजिलें, प्लॉट क्षेत्रफल और सामने की चौड़ाई आवश्यक) (नियम 42). आवश्यक जानकारी: भवन की ऊंचाई (मीटर); भवन का उपयोग (आवासीय/वाणिज्यिक आदि)."
   },
   {
     "n": 15,
@@ -334,7 +334,7 @@
       "HINDI_TEXT_PREVAILS"
     ],
     "answer_source": "template",
-    "answer": "भवन अनुज्ञा शुल्क: अभी तय नहीं किया जा सकता। आवश्यक जानकारी: प्रस्तावित निर्मित क्षेत्र (वर्ग मीटर); भवन का उपयोग (आवासीय/वाणिज्यिक आदि); भवन की ऊंचाई (मीटर)."
+    "answer": "भवन अनुज्ञा शुल्क (नियम 21(3)(b), PDF पृष्ठ 36): अभी तय नहीं किया जा सकता। अनुसूची: हाई राइज के अलावा भवनों के लिए आवासीय शुल्क निर्मित क्षेत्र के स्लैब के अनुसार निश्चित है — रु. 750 (0–75 वर्ग मीटर) से रु. 25,000 (2,001–2,500 वर्ग मीटर) तक, और 2,500 वर्ग मीटर से अधिक पर रु. 50,000 (नियम 21(3)(b) मद 1); आवासीय हाई राइज भवन के लिए रु. 10.00 प्रति वर्ग मीटर निर्मित क्षेत्र (नियम 21(3)(c)); आवेदन शुल्क रु. 1.00 प्रति वर्ग मीटर प्रस्तावित निर्मित क्षेत्र (नियम 21(2)(ii))। आवश्यक जानकारी: प्रस्तावित निर्मित क्षेत्र (वर्ग मीटर); भवन का उपयोग (आवासीय/वाणिज्यिक आदि); भवन की ऊंचाई (मीटर)."
   },
   {
     "n": 16,
