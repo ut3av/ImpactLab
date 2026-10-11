@@ -67,7 +67,11 @@ def main() -> None:
         # 5. Hindi question and receipt.
         page.get_by_label("Question in English or Hindi").fill("बिल्डिंग परमिशन की फीस कितनी है और किस नियम में लिखी है?")
         page.get_by_role("button", name="Ask").click()
-        expect(insp.locator("[data-status=MORE_INFORMATION_NEEDED]").first).to_be_visible(timeout=15000)
+        # Example inputs (180 sq m built-up, residential, 7 m, 2 storeys) are still in the form -> slab fee Rs. 2,000.
+        expect(insp.locator("[data-status=VERIFIED]").first).to_be_visible(timeout=15000)
+        expect(insp.get_by_text("2,000", exact=False).first).to_be_visible()
+        expect(insp.locator("p[lang=hi]").first).to_be_visible()
+        print("ok: Hindi fee question uses form inputs -> Rs. 2,000 (Rule 21(3)(b))")
         shot(page, "04-hindi")
         page.get_by_role("button", name="Counter Receipt").click()
         expect(page.get_by_text("Informational regulatory reference. Not an official building approval or legal opinion.")).to_be_visible()
