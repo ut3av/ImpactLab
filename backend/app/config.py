@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     data_dir: Path = REPO_ROOT / "data"
     static_dir: Path = REPO_ROOT / "frontend" / "dist"
     max_body_bytes: int = 32_000
+    # Sliding one-minute limits on outbound model calls made by POST /api/explain.
+    explain_rate_per_minute: int = Field(default=20, ge=1)
+    explain_global_rate_per_minute: int = Field(default=120, ge=1)
     port: int = 8000
 
     @property

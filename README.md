@@ -265,6 +265,92 @@ graph LR
 
 ---
 
+## Voice Guide and Explain with AI
+
+Two features help a first-time clerk learn MIRA and explain a result to a citizen. Neither one is a source of regulatory answers. The verified rule data stays authoritative.
+
+### Voice Guide (header button "Voice Guide")
+
+A spoken, bilingual (English / Hindi) walkthrough of the real interface in seven steps:
+
+| Step | What it explains | Region highlighted |
+|---|---|---|
+| 1. Introduction | What MIRA does and what problem it solves | none |
+| 2. Ask a question | The bilingual question box, sample questions, values read from the question, project inputs | Ask bar |
+| 3. Understand the answer | Status badges, the answer label, result cards, evidence with rule number and PDF page | Regulation inspector |
+| 4. Explore the building | Plot, street, verified / unresolved / conflicting zones, 3D and Plan controls | Interactive plot |
+| 5. Understand a regulation | Rule chips, "Open whole rule", calculation steps, conditional results, Explain with AI | Calculations or evidence |
+| 6. Understand warnings | More information needed, Not found, Version review needed, Hindi-prevails notice | Warnings |
+| 7. Counter Receipt | The printable informational summary | Counter Receipt button |
+
+* **Context-aware.** The steps use the current application state (the record, the selected zone, the drawn scene), never text scraped from the page. For example, step 4 states the plot dimensions you entered. "Explain current screen" describes the selected constraint, the calculation on screen, or the answer being inspected.
+* **Controls.** Start Guide, Previous, Next, Play Voice, Pause Voice, Resume Voice, Replay, Stop Voice and Close Guide. Only the actions valid for the current playback state are active. You can move between steps at any time: changing step cancels the previous narration at once, and closing the guide stops it immediately.
+* **Non-modal.** The guide never traps focus or blocks the workbench. It sits at the bottom of the screen, on the side away from the region being explained (a bottom sheet on phones), and the highlight outline does not intercept clicks.
+* **Keyboard.** Left and right arrow keys change steps, Escape closes the guide, and focus returns to the "Voice Guide" button.
+
+### Explain with AI (in the Regulation Inspector)
+
+* **Entry points.** "Explain with AI" below the answer (the whole result), "Explain with AI" in the selection note (the selected 3D or plan constraint), and "Explain this calculation" on each result card.
+* **The client sends identifiers only:** calculation types, citation ids such as `56#3` or `verified:56_1_front`, the inputs, and the selected focus. `POST /api/explain` rebuilds every rule passage, value, status, missing input and version warning from the server's own data. It accepts no rule text, answer text or status from the browser (unknown fields are rejected with 422).
+* **Minimum context.** Only the evidence for the selected target is sent to the model (for example, one calculation, its verified table and at most three passages).
+* **Validated output.** The response is parsed as JSON and schema-checked. It is rejected (and replaced by a basic explanation) when it:
+  * contains markup;
+  * cites evidence that was not supplied;
+  * states a number or rule reference that does not appear in the supplied context;
+  * claims a plan is approved or compliant;
+  * is in the wrong language.
+
+  If a version warning applies and the model leaves it out, MIRA adds it.
+* **Authoritative evidence stays separate.** The official source text (English consolidated copy, not translated), the status badge, warnings and missing inputs are rendered from server data, beside the generated text. They are never taken from the model.
+* **Concise by default.** "Show more detail" requests a fuller explanation, and "Show brief explanation" returns to the short one.
+* **Read Aloud.** Reads exactly the explanation shown, with Pause, Resume, Stop and Replay. A new explanation, a language change, closing the panel, or a new result stops the previous narration first.
+
+### When AI or speech is unavailable
+
+| Situation | What MIRA does |
+|---|---|
+| No `CEREBRAS_API_KEY`, timeout, rate limit, network or auth error, unsupported model | Shows a **basic explanation** built only from the verified data, labelled "Basic explanation · not live AI" with the reason, plus "Try again" for transient failures. |
+| Model output malformed or fails the evidence checks | Discards it and shows the basic explanation, labelled as such. |
+| Question not covered by the rules (`NOT_FOUND`) | Never calls the model. Explains that the rules do not answer it. |
+| Browser has no SpeechSynthesis | Guide and explanations stay fully usable as text. Audio controls are shown as unavailable, with advice to use a current Edge, Chrome or Safari. |
+| No Hindi voice installed | Hindi text stays available. MIRA explains how to add a Hindi (India) voice instead of playing silent or garbled audio. |
+
+### Speech technology and languages
+
+* **Engine.** The browser's native **Web Speech API (`SpeechSynthesis`)**. There is no paid text-to-speech service and no backend audio. **No microphone access, speech recognition or recording.**
+* **One narration engine for the whole app** (`frontend/src/lib/speech/engine.ts`). Only one utterance plays at a time. Each narration carries a generation token, so callbacks from cancelled speech are ignored. Text is spoken sentence by sentence, which avoids Chrome cutting off long utterances. Pause stops immediately, and Resume restarts the interrupted sentence, which behaves the same on browsers whose native pause is unreliable. Speech only ever starts from an explicit click, and it stops on panel close, component unmount, navigation and page exit.
+* **Voices are chosen by language metadata**, never by a hard-coded voice name. Hindi uses `hi-IN`, then any `hi-*` voice. English uses `en-IN`, then `en-GB`, `en-US`, then any `en-*` voice. Voice lists that load late (Chrome, Firefox) are handled.
+* **Language choice.** One choice (English / Hindi) is shared by the guide and explanations and stored only in this browser (`localStorage`). There is no account and no server-side storage. The Hindi guide states that Hindi applies to the guide and explanations only, while the rest of the screen and the official rule text stay in English. Official quotations are never translated or presented as Hindi originals.
+
+| Browser | English narration | Hindi narration |
+|---|---|---|
+| Microsoft Edge (Windows, macOS) | Yes | Yes. Edge ships natural `hi-IN` voices. |
+| Google Chrome (desktop) | Yes | Usually yes ("Google हिन्दी", online voice). |
+| Safari (macOS, iOS) | Yes | Yes, if a Hindi voice is installed in system settings. |
+| Chrome (Android) | Yes | Uses the device text-to-speech engine. Install Hindi there. |
+| Firefox | Depends on OS voices | Depends on OS voices. On Linux this needs speech-dispatcher. |
+
+Voice quality and availability differ between devices. MIRA does not promise identical narration everywhere.
+
+### Configuration
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `CEREBRAS_API_KEY` | empty | Server-side only. Without it, explanations are basic (deterministic). |
+| `CEREBRAS_MODEL` | `gpt-oss-120b` | Model used for answers and explanations. |
+| `CEREBRAS_TIMEOUT_S` | `20` | Per-request timeout. On timeout, the basic explanation is returned. |
+| `EXPLAIN_RATE_PER_MINUTE` | `20` | Model calls per client per minute for `/api/explain`. Over the limit, a basic explanation is returned. |
+| `EXPLAIN_GLOBAL_RATE_PER_MINUTE` | `120` | Model calls per minute for `/api/explain` across all clients. |
+
+### Known limitations
+
+* The number guard compares digits only. A number written out in words would not be caught, so the prompt requires digits and the source text stays alongside for checking.
+* "Pause" resumes from the start of the interrupted sentence, not mid-word.
+* Calculation steps come from the English calculation engine. Hindi explanations show them in English and say so.
+* The Voice Guide narrates fixed, reviewed text. It explains the interface but does not explain the law.
+
+---
+
 ## End-to-End Request Lifecycle
 
 ```mermaid

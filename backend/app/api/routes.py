@@ -6,7 +6,16 @@ from pydantic import ValidationError
 
 from app import calculations
 from app.calculations.common import SOURCE_STATUS, SourceUnavailable
-from app.models.schemas import SOURCE_DOCUMENT, SOURCE_PDF, AnswerRequest, AnswerResponse, CalcResult, CalculateRequest
+from app.models.schemas import (
+    SOURCE_DOCUMENT,
+    SOURCE_PDF,
+    AnswerRequest,
+    AnswerResponse,
+    CalcResult,
+    CalculateRequest,
+    ExplainRequest,
+    ExplainResponse,
+)
 from app.rules.loader import normalize_rule_id
 from app.rules.version_warnings import AMENDMENT_2026, CONSOLIDATION_DATE
 
@@ -137,11 +146,26 @@ def calculate(request: Request, body: CalculateRequest):
         )
 
 
+def _invalid_inputs(exc: ValidationError) -> HTTPException:
+    msgs = [str(e.get("msg", "invalid input")).removeprefix("Value error, ") for e in exc.errors()]
+    return HTTPException(status_code=422, detail="; ".join(msgs))
+
+
 @router.post("/answer", response_model=AnswerResponse)
 def answer(request: Request, body: AnswerRequest):
     st = _state(request)
     try:
         return st.answers.answer(body)
     except ValidationError as exc:
-        msgs = [str(e.get("msg", "invalid input")).removeprefix("Value error, ") for e in exc.errors()]
-        raise HTTPException(status_code=422, detail="; ".join(msgs))
+        raise _invalid_inputs(exc)
+
+
+@router.post("/explain", response_model=ExplainResponse)
+def explain(request: Request, body: ExplainRequest):
+    """Explain an evaluated result, calculation, constraint or drawn element. AI problems never fail the request:
+    the response falls back to a deterministic basic explanation and names the reason."""
+    st = _state(request)
+    try:
+        return st.explainer.explain(body, client=request.client.host if request.client else "anon")
+    except ValidationError as exc:
+        raise _invalid_inputs(exc)

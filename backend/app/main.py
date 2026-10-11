@@ -19,7 +19,9 @@ from app.config import Settings, get_settings
 from app.rules.loader import RuleDataError, load_store
 from app.rules.verified_tables import verify_against_store
 from app.services.answer import AnswerService
+from app.services.explain import ExplainService
 from app.services.llm import LLMClient
+from app.services.ratelimit import SlidingWindowLimiter
 from app.services.retrieval import Retriever
 
 log = logging.getLogger("mira")
@@ -52,6 +54,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
         if app.state.store is not None:
             app.state.answers = AnswerService(app.state.store, app.state.retriever, app.state.llm)
+            limiter = SlidingWindowLimiter(settings.explain_rate_per_minute, settings.explain_global_rate_per_minute)
+            app.state.explainer = ExplainService(app.state.store, app.state.retriever, app.state.llm, limiter)
         yield
 
     app = FastAPI(

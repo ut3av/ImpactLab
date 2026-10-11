@@ -15,6 +15,7 @@ from app.models.schemas import (
     ProjectInputs,
     SearchTrace,
     Status,
+    Warning,
 )
 from app.rules.loader import RuleStore
 from app.rules.version_warnings import HINDI_PREVAILS, warnings_for
@@ -80,6 +81,26 @@ HI_RESULT_WORDS = [
 
 def rule_label(c: Citation) -> str:
     return f"Rule {c.rule}{c.sub_rule or ''}"
+
+
+def derive_statuses(not_found: bool, calcs: list[CalcResult], missing: list[MissingInput], warnings: list[Warning]) -> list[Status]:
+    """Case statuses, most severe first. Shared by /api/answer and /api/explain."""
+    statuses: list[Status] = []
+    if not_found:
+        statuses.append(Status.NOT_FOUND)
+    else:
+        for calc in calcs:
+            if calc.status == Status.VERIFIED:
+                statuses += [Status.VERIFIED, Status.CALCULATION_COMPLETED]
+            else:
+                statuses.append(calc.status)
+        if missing:
+            statuses.append(Status.MORE_INFORMATION_NEEDED)
+        if not calcs or any(c.status == Status.SOURCE_FOUND for c in calcs):
+            statuses.append(Status.SOURCE_FOUND)
+        if any(w.code.startswith("AMENDMENT") for w in warnings):
+            statuses.append(Status.VERSION_REVIEW_NEEDED)
+    return sorted(set(statuses), key=STATUS_PRIORITY.index)
 
 
 class AnswerService:
@@ -171,22 +192,7 @@ class AnswerService:
         if lang == "hi" and not not_found:
             warnings.append(HINDI_PREVAILS)
 
-        statuses: list[Status] = []
-        if not_found:
-            statuses.append(Status.NOT_FOUND)
-        else:
-            for calc in calcs:
-                if calc.status == Status.VERIFIED:
-                    statuses += [Status.VERIFIED, Status.CALCULATION_COMPLETED]
-                else:
-                    statuses.append(calc.status)
-            if missing:
-                statuses.append(Status.MORE_INFORMATION_NEEDED)
-            if not calcs or any(c.status == Status.SOURCE_FOUND for c in calcs):
-                statuses.append(Status.SOURCE_FOUND)
-            if any(w.code.startswith("AMENDMENT") for w in warnings):
-                statuses.append(Status.VERSION_REVIEW_NEEDED)
-        statuses = sorted(set(statuses), key=STATUS_PRIORITY.index)
+        statuses = derive_statuses(not_found, calcs, missing, warnings)
         primary = statuses[0]
 
         summary = self._template(lang, req.question, not_found, ex.out_of_scope_topic, calcs, citations, missing, terms)
@@ -297,4 +303,4 @@ class AnswerService:
         return " ".join(lines)
 
 
-__all__ = ["AnswerService", "NOT_FOUND_EN", "fmt_m"]
+__all__ = ["AnswerService", "NOT_FOUND_EN", "derive_statuses", "fmt_m"]

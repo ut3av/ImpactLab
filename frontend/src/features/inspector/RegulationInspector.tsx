@@ -1,12 +1,18 @@
 import { AlertTriangle, BookOpen, ChevronDown, ExternalLink, FileText, Info, Printer, Sparkles, SquareFunction, X } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import { StatusBadge } from "@/components/StatusBadge"
 import { Button } from "@/components/ui/button"
+import { AI_NOT_CONFIGURED_NOTE, EXPLAIN_GUIDANCE, pendingTargetLabel } from "@/features/explain/copy"
+import { ExplainButton } from "@/features/explain/ExplainButton"
+import { ExplainPanel } from "@/features/explain/ExplainPanel"
+import { buildExplainRequest, focusFromSelection, focusKey, isCalcType, recordIdentity } from "@/features/explain/payload"
+import { useExplanation } from "@/features/explain/useExplanation"
 import { api, ApiError } from "@/lib/api"
+import { useLanguagePreference } from "@/lib/language"
 import { STATUS_META } from "@/lib/status"
 import { INPUT_LABELS, type InspectionRecord } from "@/lib/record"
 import { cn } from "@/lib/utils"
-import type { CalcResult, Citation, RuleDetail } from "@/types/api"
+import type { CalcResult, Citation, ExplainFocus, RuleDetail, UiLanguage } from "@/types/api"
 
 type Props = {
   record: InspectionRecord | null
@@ -15,11 +21,19 @@ type Props = {
   onReceipt: () => void
   error: string | null
   loading: boolean
+  /** From /api/health. false: say up front that a basic (non-AI) explanation will be shown. */
+  aiConfigured?: boolean
 }
 
-export function RegulationInspector({ record, selected, onSelect, onReceipt, error, loading }: Props) {
+export function RegulationInspector({ record, selected, onSelect, onReceipt, error, loading, aiConfigured }: Props) {
   const [ruleOpen, setRuleOpen] = useState<string | null>(null)
   const selCalcType = selected?.split(":")[0]
+  const [langPref, setLangPref] = useLanguagePreference()
+  const language: UiLanguage = langPref ?? record?.language ?? "en"
+  const explanation = useExplanation(recordIdentity(record))
+  const [scrollTick, setScrollTick] = useState(0)
+  const mainExplain = useRef<HTMLButtonElement>(null)
+  const aiNoteId = useId()
 
   if (loading) return <InspectorSkeleton />
   if (error)
@@ -33,6 +47,15 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
     )
   if (!record) return <InspectorEmpty />
 
+  const ex = explanation.state
+  const busyFocus = ex.status === "loading" ? focusKey(ex.req.focus) : null
+  const selectionFocus = selected ? focusFromSelection(selected) : null
+  /** Every entry point feeds the one panel; triggers below it scroll it into view while focus stays on the trigger. */
+  const explain = (focus: ExplainFocus | null, scroll: boolean) => {
+    explanation.request(buildExplainRequest(record, focus, language, "brief"))
+    setScrollTick((t) => (scroll ? t + 1 : 0))
+  }
+
   return (
     <div className="space-y-4 p-4">
       <header className="space-y-2">
@@ -43,17 +66,25 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
               {record.question}
             </p>
           </div>
-          <Button size="sm" variant="outline" onClick={onReceipt} className="no-print shrink-0">
+          <Button size="sm" variant="outline" onClick={onReceipt} className="no-print shrink-0" data-guide="receipt">
             <Printer className="size-3.5" aria-hidden /> Counter Receipt
           </Button>
         </div>
         <StatusBanner record={record} />
       </header>
 
-      {selected && <SelectionNote selected={selected} record={record} onClear={() => onSelect(null)} />}
+      {selected && (
+        <SelectionNote
+          selected={selected}
+          record={record}
+          onClear={() => onSelect(null)}
+          onExplain={selectionFocus ? () => explain(selectionFocus, true) : undefined}
+          explainBusy={!!selectionFocus && busyFocus === focusKey(selectionFocus)}
+        />
+      )}
 
       {record.answerText && (
-        <section aria-label="Answer" className="rounded-sm border bg-card p-3 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+        <section aria-label="Answer" data-guide="answer" className="rounded-sm border bg-card p-3 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
           <div className="mb-1.5 flex items-center gap-2">
             {record.answerSource === "ai" ? (
               <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-wider text-cobalt uppercase">
@@ -75,22 +106,52 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
         </section>
       )}
 
-      {record.warnings.map((w) => (
-        <section key={w.code} role="note" className="rounded-sm border border-review/50 bg-review-soft p-3">
-          <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[oklch(0.42_0.1_65)]">
-            <AlertTriangle className="size-3.5" aria-hidden /> {w.title}
-          </p>
-          <p className="mt-1 text-[12.5px] leading-snug text-ink/85">{w.detail}</p>
-          {w.source_url && (
-            <a href={w.source_url} target="_blank" rel="noreferrer noopener" className="mt-1.5 inline-flex items-center gap-1 text-[12px] text-cobalt underline-offset-2 hover:underline">
-              Amendment reference (external, not verified by MIRA) <ExternalLink className="size-3" aria-hidden />
-            </a>
+      <div data-guide="explain">
+        <div className="no-print flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <ExplainButton
+            ref={mainExplain}
+            label="Explain with AI"
+            ariaLabel="Explain this result with AI"
+            busy={busyFocus === "result"}
+            onClick={() => explain(null, false)}
+            describedBy={aiConfigured === false ? aiNoteId : undefined}
+          />
+          {aiConfigured === false && (
+            <p id={aiNoteId} className="min-w-0 flex-1 text-[11.5px] leading-snug text-muted-foreground">
+              {AI_NOT_CONFIGURED_NOTE}
+            </p>
           )}
-        </section>
-      ))}
+        </div>
+        <ExplainPanel
+          explanation={explanation}
+          language={language}
+          onLanguage={setLangPref}
+          pendingLabel={ex.status === "idle" ? "" : pendingTargetLabel(record, ex.req.focus)}
+          scrollSignal={scrollTick}
+          onClosed={() => mainExplain.current?.focus()}
+        />
+      </div>
+
+      {record.warnings.length > 0 && (
+        <div data-guide="warnings" className="space-y-4">
+          {record.warnings.map((w) => (
+            <section key={w.code} role="note" className="rounded-sm border border-review/50 bg-review-soft p-3">
+              <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[oklch(0.42_0.1_65)]">
+                <AlertTriangle className="size-3.5" aria-hidden /> {w.title}
+              </p>
+              <p className="mt-1 text-[12.5px] leading-snug text-ink/85">{w.detail}</p>
+              {w.source_url && (
+                <a href={w.source_url} target="_blank" rel="noreferrer noopener" className="mt-1.5 inline-flex items-center gap-1 text-[12px] text-cobalt underline-offset-2 hover:underline">
+                  Amendment reference (external, not verified by MIRA) <ExternalLink className="size-3" aria-hidden />
+                </a>
+              )}
+            </section>
+          ))}
+        </div>
+      )}
 
       {record.missing.length > 0 && (
-        <section aria-label="Missing information" className="rounded-sm border border-dashed border-review/60 p-3">
+        <section aria-label="Missing information" data-guide="missing" className="rounded-sm border border-dashed border-review/60 p-3">
           <p className="panel-label mb-2 text-[oklch(0.45_0.11_65)]!">More information needed</p>
           <ul className="space-y-1.5">
             {record.missing.map((m) => (
@@ -105,15 +166,26 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
       )}
 
       {record.calcs.length > 0 && (
-        <section aria-label="Calculations" className="space-y-2">
+        <section aria-label="Calculations" data-guide="calculations" className="space-y-2">
           <p className="panel-label">Rule-to-geometry results</p>
-          {record.calcs.map((c) => (
-            <CalcCard key={c.calc_type} calc={c} active={selCalcType === c.calc_type} onOpenRule={setRuleOpen} onSelect={onSelect} />
-          ))}
+          {record.calcs.map((c) => {
+            const ct = c.calc_type
+            return (
+              <CalcCard
+                key={ct}
+                calc={c}
+                active={selCalcType === ct}
+                onOpenRule={setRuleOpen}
+                onSelect={onSelect}
+                onExplain={isCalcType(ct) ? () => explain({ calc_type: ct }, true) : undefined}
+                explainBusy={busyFocus === `calc:${ct}`}
+              />
+            )
+          })}
         </section>
       )}
 
-      <section aria-label="Evidence" className="space-y-2">
+      <section aria-label="Evidence" data-guide="evidence" className="space-y-2">
         <p className="panel-label">Evidence from the supplied rules</p>
         {record.citations.length === 0 ? (
           <p className="text-[12.5px] text-muted-foreground">No rule passage supports an answer. Nothing is cited.</p>
@@ -141,7 +213,7 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
 function StatusBanner({ record }: { record: InspectionRecord }) {
   const meta = STATUS_META[record.primary]
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5" data-guide="status">
       <div className="flex flex-wrap items-center gap-1.5">
         <StatusBadge status={record.primary} size="md" />
         {record.statuses
@@ -155,7 +227,21 @@ function StatusBanner({ record }: { record: InspectionRecord }) {
   )
 }
 
-function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; active: boolean; onOpenRule: (id: string) => void; onSelect: (k: string) => void }) {
+function CalcCard({
+  calc,
+  active,
+  onOpenRule,
+  onSelect,
+  onExplain,
+  explainBusy,
+}: {
+  calc: CalcResult
+  active: boolean
+  onOpenRule: (id: string) => void
+  onSelect: (k: string) => void
+  onExplain?: () => void
+  explainBusy: boolean
+}) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (active) ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" })
@@ -271,13 +357,23 @@ function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; ac
         </ul>
       )}
 
-      <div className="mt-2.5 flex flex-wrap gap-1">
+      <div className="mt-2.5 flex flex-wrap items-center gap-1">
         {calc.citations.map((c, i) => (
           <button key={i} type="button" onClick={() => onOpenRule(c.rule)} className="rounded-sm border border-cobalt/30 bg-cobalt-soft px-1.5 py-0.5 font-mono text-[10.5px] text-cobalt hover:bg-cobalt/10">
             R{c.rule}
             {c.sub_rule} · p.{c.page}
           </button>
         ))}
+        {onExplain && (
+          <ExplainButton
+            tone="quiet"
+            label="Explain this calculation"
+            ariaLabel={`Explain this calculation: ${calc.label}`}
+            busy={explainBusy}
+            onClick={onExplain}
+            className="no-print ml-auto"
+          />
+        )}
       </div>
     </div>
   )
@@ -384,7 +480,19 @@ function RuleDrawer({ id, onClose }: { id: string; onClose: () => void }) {
   )
 }
 
-function SelectionNote({ selected, record, onClear }: { selected: string; record: InspectionRecord; onClear: () => void }) {
+function SelectionNote({
+  selected,
+  record,
+  onClear,
+  onExplain,
+  explainBusy,
+}: {
+  selected: string
+  record: InspectionRecord
+  onClear: () => void
+  onExplain?: () => void
+  explainBusy: boolean
+}) {
   let title = ""
   let body = ""
   if (selected === "building") {
@@ -408,12 +516,22 @@ function SelectionNote({ selected, record, onClear }: { selected: string; record
       : `No verified dimension can be drawn: ${calc?.missing_inputs.map((m) => m.label).join("; ") || "the applicable rule could not be established"}.`
   }
   return (
-    <div className="flex items-start gap-2 rounded-sm border border-cobalt/35 bg-cobalt-soft/60 p-2.5">
+    <div data-guide="selection" className="flex items-start gap-2 rounded-sm border border-cobalt/35 bg-cobalt-soft/60 p-2.5">
       <FileText className="mt-0.5 size-3.5 shrink-0 text-cobalt" aria-hidden />
       <div className="flex-1">
         <p className="text-[12.5px] font-medium text-ink">{title}</p>
         <p className="mt-0.5 text-[12px] leading-snug text-ink/80">{body}</p>
         {selected === "building" && <StatusBadge status="ILLUSTRATIVE_ONLY" className="mt-1.5" />}
+        {onExplain && (
+          <ExplainButton
+            tone="secondary"
+            label="Explain with AI"
+            ariaLabel="Explain the selected constraint with AI"
+            busy={explainBusy}
+            onClick={onExplain}
+            className="no-print mt-2 bg-paper"
+          />
+        )}
       </div>
       <button type="button" onClick={onClear} aria-label="Clear selection" className="text-muted-foreground hover:text-ink">
         <X className="size-3.5" />
@@ -423,6 +541,7 @@ function SelectionNote({ selected, record, onClear }: { selected: string; record
 }
 
 function InspectorEmpty() {
+  const guidanceId = useId()
   return (
     <div className="space-y-4 p-5">
       <p className="panel-label">Regulation inspector</p>
@@ -434,6 +553,12 @@ function InspectorEmpty() {
         <li>• Missing inputs are asked for, never assumed.</li>
         <li>• Questions outside the rules return “Not found in the supplied rules.”</li>
       </ul>
+      <div data-guide="explain" className="space-y-1.5 border-t pt-4">
+        <ExplainButton label="Explain with AI" unavailable describedBy={guidanceId} />
+        <p id={guidanceId} className="text-[12.5px] leading-snug text-muted-foreground">
+          {EXPLAIN_GUIDANCE}
+        </p>
+      </div>
     </div>
   )
 }

@@ -132,3 +132,17 @@ export function focusKey(focus: ExplainFocus | null): string {
   if ("element" in focus) return `element:${focus.element}`
   return focus.side ? `calc:${focus.calc_type}:${focus.side}` : `calc:${focus.calc_type}`
 }
+
+const recordSeq = new WeakMap<InspectionRecord, number>()
+let nextSeq = 0
+
+/**
+ * Identity of the result being explained: generatedAt + question, plus the record object itself
+ * (generated_at has one-second resolution, so re-asking with changed inputs must still reset).
+ */
+export function recordIdentity(record: InspectionRecord | null): string | null {
+  if (!record) return null
+  let seq = recordSeq.get(record)
+  if (seq === undefined) recordSeq.set(record, (seq = ++nextSeq))
+  return `${record.generatedAt}|${record.question}|${seq}`
+}
