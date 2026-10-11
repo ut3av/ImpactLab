@@ -398,19 +398,21 @@ Visit:
 
 ## Production Deployment & Docker
 
-NIYAMLENS is containerized as a **Single-Origin Monolithic Container**:
-1. **Frontend Compilation:** Stage 1 uses `node:20-slim` to compile the React SPA into static assets (`frontend/dist`).
-2. **Runtime Serving:** Stage 2 uses `python:3.11-slim` where FastAPI serves the JSON API under `/api/*` and static SPA files under `/`.
+NIYAMLENS is packaged as a **Single-Origin Monolithic Container**:
+1. **Frontend Compilation:** Stage 1 uses `node:22-slim` to compile the React 19 SPA into static assets (`frontend/dist`).
+2. **Runtime Serving:** Stage 2 uses `python:3.13-slim` where FastAPI serves the JSON API under `/api/*` and static SPA files under `/`. A non-root user (`appuser`, UID 10001) runs the process.
+3. **Statutory Data:** Packaged directly inside `data/` in the image — no database or external API dependencies at startup.
 
 ```bash
 # Build production Docker image
 docker build -t niyamlens:latest .
 
-# Run container locally
+# Run container locally (binds 0.0.0.0:8000)
 docker run -p 8000:8000 -e PORT=8000 niyamlens:latest
 ```
 
-The repository includes a ready-to-deploy **Render Blueprint** (`render.yaml`) that binds dynamically to Render's allocated port. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete instructions.
+The repository includes a ready-to-deploy **Render Blueprint** (`render.yaml`) targeting the Singapore region with health check `/api/health`. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for full deployment instructions, environment variables, and CI/CD details.
+
 
 ---
 

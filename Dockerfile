@@ -24,8 +24,8 @@ COPY backend/requirements.txt backend/requirements.txt
 RUN pip install -r backend/requirements.txt
 
 COPY backend/app backend/app
-# Only the rule data the server reads at runtime (JSONL + page text + data dictionary).
-COPY data/bhumi_vikas_rules.jsonl data/bhumi_vikas_rules_fulltext_by_page.txt data/DATA_DICTIONARY.md data/
+# Packaged regulatory data the server reads at runtime (JSONL + page text + dictionary).
+COPY data/ data/
 COPY --from=frontend /build/frontend/dist frontend/dist
 
 RUN useradd --create-home --uid 10001 appuser && chown -R appuser /app

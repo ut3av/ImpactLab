@@ -11,6 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=(REPO_ROOT / ".env", ".env"), extra="ignore")
 
+    app_env: str = Field(default="development")
     cerebras_api_key: SecretStr | None = Field(default=None)
     cerebras_model: str = "gpt-oss-120b"
     cerebras_timeout_s: float = 20.0

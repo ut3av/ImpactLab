@@ -4,15 +4,19 @@ services:
   - type: web
     name: niyamlens
     runtime: docker
+    region: singapore
+    plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    plan: free
     healthCheckPath: /api/health
-    autoDeployTrigger: commit
+    autoDeploy: true
     envVars:
+      - key: APP_ENV
+        value: production
       - key: CEREBRAS_API_KEY
         sync: false
       - key: CEREBRAS_MODEL
         value: gpt-oss-120b
       - key: CEREBRAS_TIMEOUT_S
         value: "20"
+

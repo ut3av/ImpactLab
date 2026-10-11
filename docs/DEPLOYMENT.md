@@ -1,114 +1,193 @@
-# NIYAMLENS: Deployment Guide
+# NIYAMLENS: Deployment and Production Configuration Guide
 
-This guide details the deployment architecture, containerization, and configuration options for **NIYAMLENS**.
+This guide details the deployment architecture, containerization, local execution, CI/CD pipeline, and Render cloud deployment for **NIYAMLENS** (Track 1: Bhumi Vikas Sahayak, Bhopal Impact Lab 2026).
 
 ---
 
-## 1. Deployment Topology
+## 1. Target Deployment Architecture
 
-NIYAMLENS is packaged as a **single-origin monolithic container**. This architecture eliminates cross-origin resource sharing (CORS) complications, avoids multi-container orchestration overhead, and ensures the entire application runs with sub-3-second startup times.
+NIYAMLENS is packaged as a **single-origin monolithic container**. This architecture:
+* Eliminates Cross-Origin Resource Sharing (CORS) complexity and security risks.
+* Avoids multi-container orchestration overhead.
+* Guarantees that the browser accesses the React single-page application and the FastAPI REST API through the exact same origin (`https://<domain>/` and `https://<domain>/api/*`).
+* Requires **no cloud database**, **no authentication service**, and **no persistent volume**.
 
 ```mermaid
-graph LR
+graph TD
+    Client["Browser / Municipal Counter Client"] -->|HTTPS (Port 443 / $PORT)| Render["Render Web Service / Container Gateway"]
     subgraph Container ["NIYAMLENS Container (Single Origin)"]
-        FastAPI["FastAPI App (uvicorn)"]
-        APIEndpoints["REST Endpoints (/api/*)"]
-        StaticServer["Static Files Mount (/)"]
-        RuleStore["In-Memory Rule Store (RAM)"]
+        Uvicorn["Uvicorn Server (0.0.0.0:$PORT)"]
+        FastAPI["FastAPI Application (app.main:app)"]
+        API["REST API (/api/health, /api/rules/*, /api/answer, /api/calculate)"]
+        SPA["Static SPA Mount (/ -> frontend/dist)"]
+        RuleStore["In-Memory Rule Store (RAM: 106 rules, 787 passages)"]
+        CerebrasClient["Optional Cerebras LLM Client (cerebras-cloud-sdk)"]
     end
-
-    Client["Browser / Municipal Counter"] -->|HTTP / HTTPS| Container
-    FastAPI --> APIEndpoints
-    FastAPI --> StaticServer
-    APIEndpoints --> RuleStore
+    Render --> Uvicorn
+    Uvicorn --> FastAPI
+    FastAPI --> API
+    FastAPI --> SPA
+    API --> RuleStore
+    API -.->|Optional AI Inference| CerebrasClient
+    CerebrasClient -.->|Upstream TLS| CerebrasAPI["Cerebras Inference Cloud (llama3.1-70b / gpt-oss-120b)"]
 ```
 
-* **Frontend:** The React 19 application is compiled into static production assets (`frontend/dist/`).
-* **Backend:** FastAPI serves the JSON API under `/api/*` and serves the compiled Single Page Application from `frontend/dist/` at the root path (`/`). Any non-API route falls back to `index.html`.
-* **State / Storage:** Stateless and self-contained; statutory datasets (`data/`) are packaged directly into the container image.
+* **Frontend:** React 19 + TypeScript + Vite, compiled into static assets in `frontend/dist/`.
+* **Backend:** FastAPI + Uvicorn, serving the API routes under `/api/*` and serving `frontend/dist/` at the root path (`/`). Any non-API route falls back to `index.html` for client-side routing.
+* **Statutory Data:** Packaged locally in `data/` (`bhumi_vikas_rules.jsonl`, `bhumi_vikas_rules_fulltext_by_page.txt`, `DATA_DICTIONARY.md`). No external data fetching during container boot.
 
 ---
 
-## 2. Docker Packaging
+## 2. Environment Variables Specification
 
-### 2.1. Multi-Stage Dockerfile Specification
-The root `Dockerfile` utilizes a two-stage build to produce a minimal, secure production image:
+The application uses Pydantic Settings (`backend/app/config.py`). All variables are optional for startup:
+
+| Variable | Type | Default | Required | Purpose |
+|---|---|---|:---:|---|
+| `APP_ENV` | String | `development` | No | Environment identifier (`development`, `production`, `test`). |
+| `PORT` | Integer | `8000` | No | Port on which Uvicorn binds HTTP requests. Set dynamically by Render via `$PORT`. |
+| `CEREBRAS_API_KEY` | String (Secret) | *None* | No | Optional API key for Cerebras Cloud inference. If absent, the app operates in offline deterministic mode. |
+| `CEREBRAS_MODEL` | String | `gpt-oss-120b` | No | Cerebras model identifier (e.g., `llama-3.3-70b`, `llama3.1-70b`, `gpt-oss-120b`). |
+| `CEREBRAS_TIMEOUT_S` | Float | `20.0` | No | Timeout in seconds before abandoning live AI and providing verified rule citations. |
+
+> [!IMPORTANT]
+> **Secret Safety Rule:** Real credentials must **never** be committed to Git. `CEREBRAS_API_KEY` is read strictly on the server via `SecretStr`. Never prefix secrets with `VITE_` or expose them in client bundles.
+
+---
+
+## 3. Local Execution Modes
+
+### Mode A: Separate Development Servers (Hot Reloading)
+
+Used during active development of frontend components and backend endpoints:
+
+1. **Terminal 1 — Backend:**
+   ```bash
+   cd backend
+   python -m venv .venv
+   # Windows PowerShell:
+   .venv\Scripts\Activate.ps1
+   # Linux / macOS:
+   source .venv/bin/activate
+
+   pip install -r requirements-dev.txt
+   uvicorn app.main:app --reload --port 8000
+   ```
+   * Backend runs at: [http://localhost:8000](http://localhost:8000)
+   * Swagger docs: [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+   * Health check: [http://localhost:8000/api/health](http://localhost:8000/api/health)
+
+2. **Terminal 2 — Frontend:**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   * Frontend runs at: [http://localhost:5173](http://localhost:5173)
+   * Vite proxies all `/api/*` calls directly to `http://localhost:8000`.
+
+---
+
+### Mode B: Local Single-Origin Production Simulation
+
+To verify how the application behaves in production without Docker:
+
+```bash
+# 1. Build the frontend production bundle
+cd frontend
+npm run build
+cd ..
+
+# 2. Run the FastAPI backend
+cd backend
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+Open [http://localhost:8000](http://localhost:8000) in your browser. FastAPI serves both the React UI and the `/api/*` endpoints from port 8000.
+
+---
+
+## 4. Docker Containerization
+
+### 4.1. Multi-Stage Dockerfile (`Dockerfile`)
+
+The production Dockerfile uses a clean two-stage build:
+* **Stage 1 (`node:22-slim`):** Compiles the TypeScript + React frontend into static assets (`frontend/dist`).
+* **Stage 2 (`python:3.13-slim`):** Installs Python dependencies, copies backend code, copies static assets from Stage 1, packages local regulatory datasets, and executes under a non-root `appuser` (UID 10001).
 
 ```dockerfile
-# Stage 1: Build the React frontend
-FROM node:20-slim AS frontend-builder
-WORKDIR /build
-COPY frontend/package*.json ./
-RUN npm ci
+# Stage 1: Build frontend
+FROM node:22-slim AS frontend
+WORKDIR /build/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
 RUN npm run build
 
-# Stage 2: Production Python runtime
-FROM python:3.11-slim
+# Stage 2: Python runtime
+FROM python:3.13-slim AS runtime
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PORT=8000
 WORKDIR /app
 
-# Prevent Python from writing .pyc files and buffer stdout
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+COPY backend/requirements.txt backend/requirements.txt
+RUN pip install -r backend/requirements.txt
 
-# Install backend dependencies
-COPY backend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/app backend/app
+COPY data/ data/
+COPY --from=frontend /build/frontend/dist frontend/dist
 
-# Copy backend application code and datasets
-COPY backend/app ./app
-COPY data/ ./data
-COPY resources/ ./resources
+RUN useradd --create-home --uid 10001 appuser && chown -R appuser /app
+USER appuser
 
-# Copy compiled frontend from Stage 1 into frontend/dist
-COPY --from=frontend-builder /build/dist ./frontend/dist
-
-# Expose default HTTP port
 EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD python -c "import os,urllib.request; urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\",\"8000\")}/api/health', timeout=4)" || exit 1
 
-# Set dynamic port via environment variable (Render compatible)
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+WORKDIR /app/backend
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]
 ```
 
-### 2.2. Building the Docker Image Locally
-From the repository root:
+### 4.2. Building and Running the Image
+
+When Docker is installed on your workstation:
 
 ```bash
+# Build the production image
 docker build -t niyamlens:latest .
-```
 
-### 2.3. Running the Docker Container Locally
-```bash
-docker run -p 8000:8000 \
-  -e CEREBRAS_API_KEY="your-api-key-here" \
-  -e PORT=8000 \
+# Run the container (offline mode without Cerebras key)
+docker run -d --name niyamlens -p 8000:8000 niyamlens:latest
+
+# Or run with Cerebras AI enabled
+docker run -d --name niyamlens -p 8000:8000 \
+  -e CEREBRAS_API_KEY="your_api_key_here" \
+  -e CEREBRAS_MODEL="gpt-oss-120b" \
   niyamlens:latest
 ```
 
-Visit [http://localhost:8000](http://localhost:8000) to access the application.
+Verify the container:
+```bash
+# Test health endpoint
+curl http://localhost:8000/api/health
 
----
-
-## 3. Environment Variables Reference
-
-| Variable | Type | Default | Description |
-| -------- | ---- | ------- | ----------- |
-| `PORT` | Integer | `8000` | Port on which Uvicorn binds HTTP requests. Assigned dynamically by cloud hosts like Render. |
-| `CEREBRAS_API_KEY` | String (Secret) | *None* | Optional API key for Cerebras Cloud inference. If omitted, the app operates fully with deterministic templates. |
-| `CEREBRAS_MODEL` | String | `gpt-oss-120b` | Model identifier used for natural language explanation generation. |
-| `CEREBRAS_TIMEOUT_S` | Float | `20.0` | Maximum wait time in seconds before abandoning live AI and using template answers. |
-
----
-
-## 4. Production Health Checks
-
-The backend provides a dedicated health check endpoint:
-
-```http
-GET /api/health
+# Open UI
+# Visit http://localhost:8000
 ```
 
-### Expected JSON Response (Status 200 OK):
+---
+
+## 5. Production Health Check & Readiness
+
+The endpoint `GET /api/health` validates system health without requiring authentication or AI credentials:
+
+```bash
+curl http://localhost:8000/api/health
+```
+
+### Response Schema (HTTP 200 OK):
 ```json
 {
   "status": "ok",
@@ -116,33 +195,92 @@ GET /api/health
   "passages_indexed": 787,
   "pages_loaded": 108,
   "verified_sources": {
-    "ok": 5,
-    "total": 5
+    "ok": 13,
+    "total": 13
   },
   "ai_configured": false,
   "frontend_built": true
 }
 ```
-If the statutory data cannot be read, the endpoint returns `"status": "degraded"` with HTTP 503.
+
+* **`status`**: `"ok"` when regulatory rules and text are loaded; returns `"degraded"` (HTTP 503) if essential data files are missing.
+* **`rules_loaded`**: Total statutory rules indexed in memory (106 rules).
+* **`passages_indexed`**: Total searchable passages (787 passages).
+* **`pages_loaded`**: Total gazette pages extracted (108 pages).
+* **`verified_sources`**: Object detailing verified statutory source tables (`ok`: verified count, `total`: table count).
+* **`ai_configured`**: Boolean indicating whether `CEREBRAS_API_KEY` is present.
+* **`frontend_built`**: Boolean confirming `frontend/dist/index.html` exists.
 
 ---
 
-## 5. Deploying to Cloud Platforms (Render / Railway / Fly.io)
+## 6. Render Deployment (Blueprint Specification)
 
-### Deploying on Render (Web Service)
-1. Fork or push your code to GitHub.
-2. In the [Render Dashboard](https://dashboard.render.com), create a new **Web Service**.
-3. Select your repository: `https://github.com/ut3av/ImpactLab`.
-4. Choose **Docker** as the Runtime environment.
-5. In the Environment Variables settings, configure:
-   - `CEREBRAS_API_KEY` (optional secret)
-   - `CEREBRAS_MODEL`: `gpt-oss-120b`
-   - `PORT`: Automatically set by Render.
-6. Click **Create Web Service**. Render will automatically build the multi-stage image and deploy.
+The repository includes a root-level `render.yaml` declaring the web service:
+
+```yaml
+services:
+  - type: web
+    name: niyamlens
+    runtime: docker
+    region: singapore
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: CEREBRAS_API_KEY
+        sync: false
+      - key: CEREBRAS_MODEL
+        value: gpt-oss-120b
+      - key: CEREBRAS_TIMEOUT_S
+        value: "20"
+```
+
+### Manual Steps to Deploy on Render
+
+1. **Commit and Push:**
+   Ensure all changes are pushed to your GitHub repository on `main`.
+2. **Open Render Dashboard:**
+   Sign in to [dashboard.render.com](https://dashboard.render.com).
+3. **Deploy with Blueprint:**
+   * Click **New +** and select **Blueprint**.
+   * Connect your GitHub repository (`ut3av/ImpactLab`).
+   * Render detects `render.yaml` and displays the service specification.
+   * Click **Apply**.
+4. **Configure Secrets (Optional):**
+   * In the service dashboard, open the **Environment** tab.
+   * Enter your `CEREBRAS_API_KEY` value under the `CEREBRAS_API_KEY` variable.
+   * Click **Save Changes**.
+5. **Verify Deployment:**
+   * Render will assign a public domain: `https://niyamlens.onrender.com` (or similar).
+   * Test health: `https://<your-service>.onrender.com/api/health`.
+   * Open the URL in a browser and submit a building regulation query.
+
+> [!NOTE]
+> **Render Free Plan Limitations:**
+> * The free web service spins down after 15 minutes of inactivity.
+> * The first request after spindown may incur a cold-start delay of ~30–50 seconds while the container initializes. Subsequent requests respond in < 150ms.
 
 ---
 
-## 6. Current Deployment Status
+## 7. Continuous Integration (GitHub Actions)
 
-* **Local Containerization:** The multi-stage Docker packaging and single-origin serving pipeline are defined and tested.
-* **Public Cloud Deployment:** A live public deployment URL has not yet been provisioned for this repository. Maintainers should follow Section 5 to deploy to Render when ready.
+The repository includes `.github/workflows/ci.yml` which triggers on every pull request and push to `main`:
+1. **Frontend Job:** Runs Node 22, `npm ci`, `oxlint`, `vitest` unit tests, and production build (`tsc -b && vite build`).
+2. **Backend Job:** Runs Python 3.13, installs `requirements-dev.txt`, executes 116 pytest tests, and runs the 17-question evaluation benchmark (`backend/scripts/eval_samples.py`).
+3. **Docker Job:** Validates that the multi-stage Dockerfile builds successfully using `docker/build-push-action`.
+
+---
+
+## 8. Troubleshooting & Common Issues
+
+| Symptom | Likely Cause | Resolution |
+|---|---|---|
+| **Health endpoint returns 503 `status: degraded`** | `data/bhumi_vikas_rules.jsonl` or `bhumi_vikas_rules_fulltext_by_page.txt` missing or unreadable | Ensure `data/` directory is copied in Dockerfile and not excluded in `.dockerignore`. |
+| **Blank white page in browser** | Frontend build assets missing in `frontend/dist/` | Run `npm run build` in `frontend/` before launching backend locally, or check Stage 1 in Dockerfile. |
+| **Live AI explanation shows "AI Inference Offline"** | `CEREBRAS_API_KEY` not set | This is expected behavior; the system falls back to verified deterministic templates. Add the key in `.env` or Render environment settings to enable live LLM generation. |
+| **Port binding conflict (EADDRINUSE: 8000)** | Another process is already running on port 8000 | Set `PORT=8080` in `.env` or run `uvicorn app.main:app --port 8080`. |
+| **Docker command not recognized on local host** | Docker Desktop is not installed on the Windows machine | Install Docker Desktop for Windows or rely on the GitHub Actions CI workflow to verify container builds. |
