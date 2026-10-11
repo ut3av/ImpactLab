@@ -1,0 +1,233 @@
+import { CameraControls, Edges, Grid, Html, Line } from "@react-three/drei"
+import { Canvas, type ThreeEvent } from "@react-three/fiber"
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
+import { ZONE_COLORS, type SceneModel, type SceneZone } from "@/lib/geometry"
+
+export type CameraView = "iso" | "top" | "front"
+export type SceneHandle = { setView: (v: CameraView) => void }
+
+type Props = {
+  model: SceneModel
+  selected: string | null
+  onSelect: (key: string | null) => void
+  reducedMotion: boolean
+}
+
+const PAPER = "#f1ede5"
+const INK = "#1f2a3d"
+
+/** Lightweight scene: flat planes, one box, a few lines and labels; renders on demand only. */
+const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model, selected, onSelect, reducedMotion }, ref) {
+  const controls = useRef<CameraControls>(null)
+  const plot = model.plot!
+  const roadW = model.road?.width ?? 0
+  const span = Math.max(plot.w, plot.d + roadW, 10)
+
+  const setView = (v: CameraView) => {
+    const c = controls.current
+    if (!c) return
+    const d = span * 1.35
+    const cz = roadW / 2
+    const anim = !reducedMotion
+    if (v === "top") void c.setLookAt(0, d * 1.25, cz + 0.001, 0, 0, cz, anim)
+    else if (v === "front") void c.setLookAt(0, d * 0.35, plot.d / 2 + roadW + d * 0.9, 0, 1, 0, anim)
+    else void c.setLookAt(-d * 0.75, d * 0.8, plot.d / 2 + d * 0.85, 0, 0, cz * 0.5, anim)
+  }
+  useImperativeHandle(ref, () => ({ setView }))
+  useEffect(() => {
+    setView("iso")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plot.w, plot.d, roadW])
+
+  return (
+    <Canvas
+      frameloop="demand"
+      dpr={[1, 1.75]}
+      gl={{ antialias: true, powerPreference: "low-power" }}
+      camera={{ fov: 38, near: 0.1, far: 2000, position: [-span, span, span] }}
+      onPointerMissed={() => onSelect(null)}
+      aria-label="Interactive 3D plot view"
+    >
+      <color attach="background" args={[PAPER]} />
+      <ambientLight intensity={0.9} />
+      <directionalLight position={[-20, 35, 25]} intensity={1.1} />
+      <hemisphereLight args={["#ffffff", "#d8d0c0", 0.35]} />
+      <Grid
+        position={[0, -0.01, 0]}
+        args={[200, 200]}
+        cellSize={1}
+        cellThickness={0.5}
+        cellColor="#d6cfc1"
+        sectionSize={5}
+        sectionThickness={0.9}
+        sectionColor="#bfb6a5"
+        fadeDistance={span * 4}
+        fadeStrength={1.5}
+        infiniteGrid
+      />
+      <Plot model={model} selected={selected} onSelect={onSelect} />
+      <CameraControls ref={controls} makeDefault minDistance={4} maxDistance={span * 6} maxPolarAngle={Math.PI / 2.05} smoothTime={reducedMotion ? 0 : 0.25} />
+    </Canvas>
+  )
+})
+
+export default PlotScene3D
+
+function toWorld(plot: { w: number; d: number }, x: number, y: number): [number, number] {
+  return [x - plot.w / 2, plot.d / 2 - y]
+}
+
+function Plot({ model, selected, onSelect }: { model: SceneModel; selected: string | null; onSelect: (k: string | null) => void }) {
+  const plot = model.plot!
+  const roadW = model.road?.width
+  const hw = plot.w / 2
+  const hd = plot.d / 2
+  const boundary = useMemo(
+    () => [[-hw, 0.03, hd], [hw, 0.03, hd], [hw, 0.03, -hd], [-hw, 0.03, -hd], [-hw, 0.03, hd]] as [number, number, number][],
+    [hw, hd],
+  )
+  const roadDepth = roadW ?? 6
+
+  return (
+    <group>
+      {/* Plot surface */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]} onClick={(e) => { e.stopPropagation(); onSelect("plot") }}>
+        <planeGeometry args={[plot.w, plot.d]} />
+        <meshStandardMaterial color={selected === "plot" ? "#e9e2d2" : "#f8f5ee"} />
+      </mesh>
+      <Line points={boundary} color={INK} lineWidth={2.2} />
+
+      {/* Road along the frontage */}
+      <group onClick={(e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); onSelect("road") }}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, hd + roadDepth / 2]}>
+          <planeGeometry args={[Math.max(plot.w * 2.2, 30), roadDepth]} />
+          <meshStandardMaterial color={roadW ? "#8d929b" : "#b8bcc2"} transparent opacity={roadW ? 1 : 0.55} />
+        </mesh>
+        <Line
+          points={[[-Math.max(plot.w * 1.1, 15), 0.02, hd + roadDepth / 2], [Math.max(plot.w * 1.1, 15), 0.02, hd + roadDepth / 2]]}
+          color="#f3efe6"
+          lineWidth={1.4}
+          dashed
+          dashSize={1.2}
+          gapSize={1}
+        />
+      </group>
+      <Tag position={[-Math.max(plot.w * 0.85, 12), 0.05, hd + roadDepth / 2]} tone="neutral">
+        {roadW ? `Street ${roadW} m` : "Street width not given"}
+      </Tag>
+
+      {/* Plot dimensions (user input) */}
+      <Line points={[[-hw, 0.04, hd + 0.35], [hw, 0.04, hd + 0.35]]} color={INK} lineWidth={1} />
+      <Tag position={[0, 0.05, hd + 0.9]} tone="ink">{`${plot.w} m`}</Tag>
+      <Line points={[[-hw - 0.35, 0.04, hd], [-hw - 0.35, 0.04, -hd]]} color={INK} lineWidth={1} />
+      <Tag position={[-hw - 1.3, 0.05, 0]} tone="ink">{`${plot.d} m`}</Tag>
+
+      {model.zones.map((z) => (
+        <ZoneMesh key={z.key} z={z} plot={plot} selected={selected === z.key} onSelect={onSelect} />
+      ))}
+
+      {model.unresolved.map((u) => {
+        const pts: Record<string, [number, number, number][]> = {
+          front: [[-hw, 0.06, hd - 0.15], [hw, 0.06, hd - 0.15]],
+          rear: [[-hw, 0.06, -hd + 0.15], [hw, 0.06, -hd + 0.15]],
+          left: [[-hw + 0.15, 0.06, hd], [-hw + 0.15, 0.06, -hd]],
+          right: [[hw - 0.15, 0.06, hd], [hw - 0.15, 0.06, -hd]],
+        }
+        const mid = pts[u.side]
+        const pos: [number, number, number] = [(mid[0][0] + mid[1][0]) / 2, 0.1, (mid[0][2] + mid[1][2]) / 2]
+        return (
+          <group key={u.key} onClick={(e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); onSelect(u.key) }}>
+            <Line points={mid} color={ZONE_COLORS.unresolved} lineWidth={3} dashed dashSize={0.6} gapSize={0.4} />
+            <Tag position={pos} tone="review" onClick={() => onSelect(u.key)}>
+              {u.label}
+            </Tag>
+          </group>
+        )
+      })}
+
+      {model.building && <Building b={model.building} plot={plot} selected={selected === "building"} onSelect={onSelect} />}
+    </group>
+  )
+}
+
+function ZoneMesh({ z, plot, selected, onSelect }: { z: SceneZone; plot: { w: number; d: number }; selected: boolean; onSelect: (k: string) => void }) {
+  const [hover, setHover] = useState(false)
+  const [cx, cz] = toWorld(plot, z.x + z.w / 2, z.y + z.d / 2)
+  const color = z.check === "below_minimum" ? ZONE_COLORS.conflict : ZONE_COLORS[z.state]
+  const opacity = selected ? 0.55 : hover ? 0.42 : 0.28
+  useEffect(() => {
+    document.body.style.cursor = hover ? "pointer" : ""
+    return () => {
+      document.body.style.cursor = ""
+    }
+  }, [hover])
+  return (
+    <group>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[cx, 0.02 + (selected ? 0.01 : 0), cz]}
+        onClick={(e) => {
+          e.stopPropagation()
+          onSelect(z.key)
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          setHover(true)
+        }}
+        onPointerOut={() => setHover(false)}
+      >
+        <planeGeometry args={[Math.max(z.w, 0.01), Math.max(z.d, 0.01)]} />
+        <meshBasicMaterial color={color} transparent opacity={opacity} depthWrite={false} />
+        <Edges color={color} />
+      </mesh>
+      <Tag position={[cx, 0.12, cz]} tone={z.check === "below_minimum" ? "alert" : z.state === "unresolved" ? "review" : "cobalt"} onClick={() => onSelect(z.key)}>
+        {`${z.depth} m · R${z.rule}`}
+      </Tag>
+    </group>
+  )
+}
+
+function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["building"]>; plot: { w: number; d: number }; selected: boolean; onSelect: (k: string) => void }) {
+  const [cx, cz] = toWorld(plot, b.x + b.w / 2, b.y + b.d / 2)
+  return (
+    <mesh
+      position={[cx, b.h / 2, cz]}
+      onClick={(e) => {
+        e.stopPropagation()
+        onSelect("building")
+      }}
+    >
+      <boxGeometry args={[b.w, b.h, b.d]} />
+      <meshStandardMaterial color={selected ? "#cfc6b4" : "#ddd6c8"} transparent opacity={0.9} roughness={0.9} />
+      <Edges color={INK} />
+      <Html position={[0, b.h / 2 + 0.6, 0]} center zIndexRange={[20, 0]}>
+        <span className="pointer-events-none rounded-sm border border-border bg-paper/95 px-1.5 py-0.5 font-mono text-[10px] whitespace-nowrap text-ink shadow-sm">
+          Proposed design · illustrative{b.heightGiven ? ` · ${b.h} m` : " · height not given"}
+        </span>
+      </Html>
+    </mesh>
+  )
+}
+
+const TAG_TONES = {
+  ink: "border-ink/20 bg-paper text-ink",
+  neutral: "border-border bg-paper/90 text-muted-foreground",
+  cobalt: "border-cobalt/40 bg-cobalt-soft text-cobalt",
+  review: "border-review/50 bg-review-soft text-[oklch(0.45_0.11_65)]",
+  alert: "border-alert/50 bg-alert-soft text-alert",
+} as const
+
+function Tag({ position, tone, children, onClick }: { position: [number, number, number]; tone: keyof typeof TAG_TONES; children: string; onClick?: () => void }) {
+  return (
+    <Html position={position} center zIndexRange={[10, 0]}>
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={onClick}
+        className={`rounded-sm border px-1.5 py-0.5 font-mono text-[10px] whitespace-nowrap shadow-sm ${TAG_TONES[tone]} ${onClick ? "cursor-pointer" : "pointer-events-none"}`}
+      >
+        {children}
+      </button>
+    </Html>
+  )
+}
