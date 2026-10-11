@@ -1,6 +1,6 @@
 import { CameraControls, Edges, Grid, Html, Line } from "@react-three/drei"
 import { Canvas, type ThreeEvent } from "@react-three/fiber"
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
+import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState, type RefObject } from "react"
 import { ZONE_COLORS, type SceneModel, type SceneZone } from "@/lib/geometry"
 
 export type CameraView = "iso" | "top" | "front"
@@ -13,12 +13,16 @@ type Props = {
   reducedMotion: boolean
 }
 
+/** Html labels portal into a wrapper we own, so unmounting the canvas never removes their container first. */
+const PortalCtx = createContext<RefObject<HTMLDivElement> | null>(null)
+
 const PAPER = "#f1ede5"
 const INK = "#1f2a3d"
 
 /** Lightweight scene: flat planes, one box, a few lines and labels; renders on demand only. */
 const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model, selected, onSelect, reducedMotion }, ref) {
   const controls = useRef<CameraControls>(null)
+  const wrap = useRef<HTMLDivElement>(null!)
   const plot = model.plot!
   const roadW = model.road?.width ?? 0
   const span = Math.max(plot.w, plot.d + roadW, 10)
@@ -40,6 +44,8 @@ const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model,
   }, [plot.w, plot.d, roadW])
 
   return (
+    <div ref={wrap} className="relative h-full w-full">
+    <PortalCtx.Provider value={wrap}>
     <Canvas
       frameloop="demand"
       dpr={[1, 1.75]}
@@ -65,9 +71,13 @@ const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model,
         fadeStrength={1.5}
         infiniteGrid
       />
-      <Plot model={model} selected={selected} onSelect={onSelect} />
+      <PortalCtx.Provider value={wrap}>
+        <Plot model={model} selected={selected} onSelect={onSelect} />
+      </PortalCtx.Provider>
       <CameraControls ref={controls} makeDefault minDistance={4} maxDistance={span * 6} maxPolarAngle={Math.PI / 2.05} smoothTime={reducedMotion ? 0 : 0.25} />
     </Canvas>
+    </PortalCtx.Provider>
+    </div>
   )
 })
 
@@ -189,6 +199,7 @@ function ZoneMesh({ z, plot, selected, onSelect }: { z: SceneZone; plot: { w: nu
 
 function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["building"]>; plot: { w: number; d: number }; selected: boolean; onSelect: (k: string) => void }) {
   const [cx, cz] = toWorld(plot, b.x + b.w / 2, b.y + b.d / 2)
+  const portal = useContext(PortalCtx)
   return (
     <mesh
       position={[cx, b.h / 2, cz]}
@@ -200,7 +211,7 @@ function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["
       <boxGeometry args={[b.w, b.h, b.d]} />
       <meshStandardMaterial color={selected ? "#cfc6b4" : "#ddd6c8"} transparent opacity={0.9} roughness={0.9} />
       <Edges color={INK} />
-      <Html position={[0, b.h / 2 + 0.6, 0]} center zIndexRange={[20, 0]}>
+      <Html position={[0, b.h / 2 + 0.6, 0]} center zIndexRange={[20, 0]} portal={portal ?? undefined}>
         <span className="pointer-events-none rounded-sm border border-border bg-paper/95 px-1.5 py-0.5 font-mono text-[10px] whitespace-nowrap text-ink shadow-sm">
           Proposed design · illustrative{b.heightGiven ? ` · ${b.h} m` : " · height not given"}
         </span>
@@ -218,8 +229,9 @@ const TAG_TONES = {
 } as const
 
 function Tag({ position, tone, children, onClick }: { position: [number, number, number]; tone: keyof typeof TAG_TONES; children: string; onClick?: () => void }) {
+  const portal = useContext(PortalCtx)
   return (
-    <Html position={position} center zIndexRange={[10, 0]}>
+    <Html position={position} center zIndexRange={[10, 0]} portal={portal ?? undefined}>
       <button
         type="button"
         tabIndex={-1}

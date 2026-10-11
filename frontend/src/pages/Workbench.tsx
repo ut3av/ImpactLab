@@ -10,6 +10,8 @@ import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { useWorkbench } from "@/hooks/useWorkbench"
 import { INPUT_LABELS } from "@/lib/record"
 
+const TAB_CLS = "data-[state=active]:bg-card data-[state=active]:text-ink data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-cobalt/30"
+
 export function Workbench() {
   const wb = useWorkbench()
   const navigate = useNavigate()
@@ -90,9 +92,9 @@ export function Workbench() {
           <div className="border-b px-3 py-3">{ask}</div>
           <Tabs defaultValue="inspector" className="flex min-h-0 flex-1 flex-col gap-0">
             <TabsList className="mx-3 mt-2 grid w-auto grid-cols-3">
-              <TabsTrigger value="inputs">Inputs</TabsTrigger>
-              <TabsTrigger value="plot">Plot</TabsTrigger>
-              <TabsTrigger value="inspector">Inspector</TabsTrigger>
+              <TabsTrigger value="inputs" className={TAB_CLS}>Inputs</TabsTrigger>
+              <TabsTrigger value="plot" className={TAB_CLS}>Plot</TabsTrigger>
+              <TabsTrigger value="inspector" className={TAB_CLS}>Inspector</TabsTrigger>
             </TabsList>
             <TabsContent value="inputs" className="min-h-0 flex-1 bg-paper">
               {inputsPanel}

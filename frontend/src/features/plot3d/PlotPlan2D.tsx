@@ -59,8 +59,17 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
               stroke={color}
               strokeWidth={fs * (sel ? 0.16 : 0.07)}
             />
-            <text x={pad + z.x + z.w / 2} y={Y(z.y + z.d / 2)} fontSize={fs * 0.75} textAnchor="middle" dominantBaseline="middle" fill={color} fontFamily="Geist Mono Variable, monospace">
-              {`${z.depth} m`}
+            <text
+              x={pad + z.x + z.w / 2}
+              y={Y(z.y + z.d / 2)}
+              fontSize={Math.min(fs * 0.75, Math.max(z.w, z.d) * 0.12)}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill={color}
+              fontFamily="Geist Mono Variable, monospace"
+              transform={z.w < z.d * 0.5 ? `rotate(-90 ${pad + z.x + z.w / 2} ${Y(z.y + z.d / 2)})` : undefined}
+            >
+              {`${z.depth} m · R${z.rule}`}
             </text>
           </g>
         )
@@ -111,8 +120,9 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
             stroke="#1f2a3d"
             strokeWidth={fs * 0.08}
           />
-          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={fs * 0.7} textAnchor="middle" dominantBaseline="middle" fill="#1f2a3d" fontFamily="Geist Mono Variable, monospace">
-            Proposed (illustrative)
+          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={Math.min(fs * 0.7, model.building.w * 0.1)} textAnchor="middle" fill="#1f2a3d" fontFamily="Geist Mono Variable, monospace">
+            <tspan x={pad + model.building.x + model.building.w / 2} dy="-0.3em">Proposed</tspan>
+            <tspan x={pad + model.building.x + model.building.w / 2} dy="1.2em">(illustrative)</tspan>
           </text>
         </g>
       )}

@@ -108,7 +108,7 @@ function Legend({ model }: { model: SceneModel }) {
     { swatch: <span className="block size-3 rounded-[2px] border border-ink/60 bg-[#ddd6c8]" />, label: "Proposed design (illustrative)" },
   ]
   return (
-    <div className="pointer-events-none absolute bottom-3 left-3 max-w-[260px] rounded-sm border bg-paper/95 p-2.5 shadow-sm">
+    <div className="pointer-events-none absolute top-3 right-3 max-w-[250px] rounded-sm border bg-paper/95 p-2.5 shadow-sm">
       <p className="panel-label mb-1.5">Legend</p>
       <ul className="space-y-1">
         {items.map((i) => (
