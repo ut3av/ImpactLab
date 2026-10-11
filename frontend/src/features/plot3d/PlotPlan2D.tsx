@@ -27,13 +27,13 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
           <line x1="0" y1="0" x2="0" y2="0.8" stroke={ZONE_COLORS.unresolved} strokeWidth="0.25" strokeOpacity="0.6" />
         </pattern>
       </defs>
-      <rect x={0} y={pad + plot.d} width={vbW} height={roadD} fill={model.road?.width ? "#1e293b" : "#334155"} opacity={model.road?.width ? 1 : 0.7} />
+      <rect x={0} y={pad + plot.d} width={vbW} height={roadD} fill={model.road?.width ? "#161412" : "#201c18"} opacity={model.road?.width ? 1 : 0.7} />
       <line x1={0} x2={vbW} y1={pad + plot.d + roadD / 2} y2={pad + plot.d + roadD / 2} stroke="#ffffff" strokeWidth={fs * 0.14} strokeDasharray={`${fs} ${fs * 0.8}`} />
-      <text x={fs * 0.6} y={pad + plot.d + roadD / 2 - fs * 0.3} fontSize={fs * 0.85} fill="#f8fafc" fontFamily={FONT_SANS} fontWeight="600">
+      <text x={fs * 0.6} y={pad + plot.d + roadD / 2 - fs * 0.3} fontSize={fs * 0.85} fill="#e7e5e4" fontFamily={FONT_SANS} fontWeight="600">
         {model.road?.width ? `Street ${model.road.width} m` : "Street width not given"}
       </text>
 
-      <rect x={pad} y={pad} width={plot.w} height={plot.d} fill="#ffffff" stroke="#0f172a" strokeWidth={fs * 0.12} />
+      <rect x={pad} y={pad} width={plot.w} height={plot.d} fill="#1c1917" stroke="#ffffff" strokeWidth={fs * 0.12} />
 
       {model.zones.map((z) => {
         const color = z.check === "below_minimum" ? ZONE_COLORS.conflict : ZONE_COLORS[z.state]
@@ -57,7 +57,7 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
               width={z.w}
               height={z.d}
               fill={z.state === "unresolved" ? "url(#amber-hatch)" : color}
-              fillOpacity={z.state === "unresolved" ? 1 : sel ? 0.5 : 0.25}
+              fillOpacity={z.state === "unresolved" ? 1 : sel ? 0.6 : 0.3}
               stroke={color}
               strokeWidth={fs * (sel ? 0.16 : 0.07)}
             />
@@ -119,11 +119,11 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
             y={Y(model.building.y + model.building.d)}
             width={model.building.w}
             height={model.building.d}
-            fill={selected === "building" ? "#cbd5e1" : "#e2e8f0"}
-            stroke="#475569"
+            fill={selected === "building" ? "#443e37" : "#2d2823"}
+            stroke="#ffffff"
             strokeWidth={fs * 0.08}
           />
-          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={Math.min(fs * 0.7, model.building.w * 0.1)} textAnchor="middle" fill="#0f172a" fontFamily={FONT_SANS} fontWeight="600">
+          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={Math.min(fs * 0.7, model.building.w * 0.1)} textAnchor="middle" fill="#ffffff" fontFamily={FONT_SANS} fontWeight="600">
             <tspan x={pad + model.building.x + model.building.w / 2} dy="-0.3em">Proposed</tspan>
             <tspan x={pad + model.building.x + model.building.w / 2} dy="1.2em">(illustrative)</tspan>
           </text>
@@ -131,10 +131,10 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
       )}
 
       {/* Dynamic Dimension lines */}
-      <text x={pad + plot.w / 2} y={pad - fs * 0.6} fontSize={fs * 0.8} textAnchor="middle" fill="#334155" fontFamily={FONT_SANS} fontWeight="700">
+      <text x={pad + plot.w / 2} y={pad - fs * 0.6} fontSize={fs * 0.8} textAnchor="middle" fill="#a8a29e" fontFamily={FONT_SANS} fontWeight="700">
         {`${plot.w} m`}
       </text>
-      <text x={pad - fs * 0.6} y={pad + plot.d / 2} fontSize={fs * 0.8} textAnchor="end" dominantBaseline="middle" fill="#334155" fontFamily={FONT_SANS} fontWeight="700">
+      <text x={pad - fs * 0.6} y={pad + plot.d / 2} fontSize={fs * 0.8} textAnchor="end" dominantBaseline="middle" fill="#a8a29e" fontFamily={FONT_SANS} fontWeight="700">
         {`${plot.d} m`}
       </text>
     </svg>

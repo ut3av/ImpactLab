@@ -50,38 +50,38 @@
 }
 
 :root {
-  /* Clean Light Architectural Workspace Palette (Slate 50/100, Pure White, Slate 900, Clean Cobalt Blue) */
-  --background: #f8fafc;
-  --paper: #ffffff;
-  --foreground: #0f172a;
-  --ink: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #eff6ff;
-  --accent-foreground: #1d4ed8;
-  --destructive: #dc2626;
-  --border: #e2e8f0;
-  --rule-line: #e2e8f0;
-  --input: #cbd5e1;
-  --ring: #2563eb;
+  /* Warm Cosmic Obsidian Palette */
+  --background: #0a0908;
+  --paper: #12100e;
+  --foreground: #ffffff;
+  --ink: #ffffff;
+  --card: rgba(18, 16, 14, 0.78);
+  --card-foreground: #ffffff;
+  --popover: #12100e;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: #ffffff;
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #9ca3af;
+  --accent: rgba(255, 255, 255, 0.12);
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.1);
+  --rule-line: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: rgba(255, 255, 255, 0.4);
   --radius: 0.5rem;
 
-  --cobalt: #2563eb;
-  --cobalt-soft: #eff6ff;
-  --verified: #16a34a;
-  --verified-soft: #f0fdf4;
-  --review: #d97706;
-  --review-soft: #fffbeb;
-  --alert: #dc2626;
-  --alert-soft: #fef2f2;
+  --cobalt: #60a5fa;
+  --cobalt-soft: rgba(96, 165, 250, 0.12);
+  --verified: #34d399;
+  --verified-soft: rgba(16, 185, 129, 0.15);
+  --review: #fbbf24;
+  --review-soft: rgba(245, 158, 11, 0.15);
+  --alert: #f87171;
+  --alert-soft: rgba(239, 68, 68, 0.15);
 }
 
 @layer base {
@@ -92,12 +92,13 @@
   html {
     @apply font-sans antialiased;
     font-feature-settings: "ss01", "cv11";
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: #0a0908;
+    color: #ffffff;
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #f8fafc;
+    background-color: #0a0908;
+    color: #ffffff;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -109,31 +110,31 @@
 }
 
 @layer components {
-  /* Architectural Blueprint Drafting Grid for Light Theme */
+  /* Architectural Blueprint Drafting Grid for Warm Obsidian Theme */
   .drafting-grid {
-    background-color: #f8fafc;
+    background-color: #0d0c0a;
     background-image:
-      linear-gradient(to right, rgba(203, 213, 225, 0.45) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(203, 213, 225, 0.45) 1px, transparent 1px),
-      linear-gradient(to right, rgba(226, 232, 240, 0.85) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(226, 232, 240, 0.85) 1px, transparent 1px);
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
   }
   .panel-label {
-    @apply font-mono text-[11px] font-semibold tracking-[0.14em] text-slate-500 uppercase;
+    @apply font-mono text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase;
   }
   .source-quote {
-    @apply rounded-md border-l-4 border-cobalt bg-slate-50 px-3.5 py-2.5 font-mono text-[12px] leading-relaxed whitespace-pre-wrap text-slate-800 shadow-xs border border-slate-200/80;
+    @apply rounded-md border-l-4 border-amber-500/80 bg-stone-900/70 px-3.5 py-2.5 font-mono text-[12px] leading-relaxed whitespace-pre-wrap text-stone-200 shadow-xs border border-white/10;
   }
   .hatch-amber {
     background-image: repeating-linear-gradient(
       135deg,
-      rgba(217, 119, 6, 0.15) 0 6px,
+      rgba(245, 158, 11, 0.2) 0 6px,
       transparent 6px 12px
     );
   }
   .card-architectural {
-    @apply rounded-lg border border-slate-200 bg-white shadow-xs;
+    @apply rounded-lg border border-white/10 bg-stone-900/80 shadow-xs;
   }
   .clean-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -143,11 +144,11 @@
     background: transparent;
   }
   .clean-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 9999px;
   }
   .clean-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: rgba(255, 255, 255, 0.28);
   }
 }
 

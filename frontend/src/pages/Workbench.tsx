@@ -93,7 +93,7 @@ export function Workbench() {
   )
 
   return (
-    <div className="flex h-dvh flex-col bg-slate-50 text-slate-900 font-sans">
+    <div className="flex h-dvh flex-col bg-[#0a0908] text-white font-sans">
       <AppHeader
         health={wb.health}
         healthError={wb.healthError}
@@ -113,14 +113,14 @@ export function Workbench() {
       {wide ? (
         <main className="grid min-h-0 flex-1 grid-cols-[290px_minmax(0,1fr)_340px]">
           {/* Left Panel: Inputs Drawer */}
-          <aside className="min-h-0 border-r border-slate-200 bg-white shadow-2xs" aria-label="Project inputs" data-guide="inputs">
+          <aside className="min-h-0 border-r border-white/10 bg-[rgba(18,16,14,0.78)] shadow-2xs backdrop-blur-md" aria-label="Project inputs" data-guide="inputs">
             <PanelTitle n="01" title="Project inputs" />
             <div className="h-[calc(100%-38px)] clean-scrollbar overflow-y-auto">{inputsPanel}</div>
           </aside>
 
           {/* Center Panel: Hero 3D/2D Mapping Canvas (Maximum Screen Space) */}
-          <section className="flex min-h-0 flex-col bg-slate-50/50" aria-label="Interactive plot">
-            <div className="border-b border-slate-200/80 bg-white/90 px-3.5 py-2 backdrop-blur-xs shadow-2xs">{ask}</div>
+          <section className="flex min-h-0 flex-col bg-[#0a0908]" aria-label="Interactive plot">
+            <div className="border-b border-white/10 bg-[rgba(18,16,14,0.7)] px-3.5 py-2 backdrop-blur-md shadow-2xs">{ask}</div>
             <PanelTitle n="02" title="Rule-to-Geometry Canvas" />
             <div className="min-h-0 flex-1 relative" data-guide="viewport">
               {plot}
@@ -128,27 +128,27 @@ export function Workbench() {
           </section>
 
           {/* Right Panel: Minimal Regulation Inspector */}
-          <aside className="min-h-0 overflow-y-auto border-l border-slate-200 bg-white clean-scrollbar shadow-2xs" aria-label="Regulation inspector" data-guide="inspector">
+          <aside className="min-h-0 overflow-y-auto border-l border-white/10 bg-[rgba(18,16,14,0.78)] clean-scrollbar shadow-2xs backdrop-blur-md text-white" aria-label="Regulation inspector" data-guide="inspector">
             <PanelTitle n="03" title="Regulation inspector" sticky />
             {inspector}
           </aside>
         </main>
       ) : (
-        <main className="flex min-h-0 flex-1 flex-col bg-slate-50">
-          <div className="border-b border-slate-200 bg-white px-3 py-2 shadow-2xs">{ask}</div>
+        <main className="flex min-h-0 flex-1 flex-col bg-[#0a0908]">
+          <div className="border-b border-white/10 bg-[rgba(18,16,14,0.7)] px-3 py-2 shadow-2xs">{ask}</div>
           <Tabs defaultValue="plot" className="flex min-h-0 flex-1 flex-col gap-0">
-            <TabsList className="mx-3 mt-1.5 grid w-auto grid-cols-3 bg-slate-200/80 p-0.5">
+            <TabsList className="mx-3 mt-1.5 grid w-auto grid-cols-3 bg-white/5 border border-white/10 p-0.5 text-stone-300">
               <TabsTrigger value="inputs" className={TAB_CLS}>Inputs</TabsTrigger>
               <TabsTrigger value="plot" className={TAB_CLS}>Plot</TabsTrigger>
               <TabsTrigger value="inspector" className={TAB_CLS}>Inspector</TabsTrigger>
             </TabsList>
-            <TabsContent value="inputs" className="min-h-0 flex-1 bg-white clean-scrollbar overflow-y-auto" data-guide="inputs">
+            <TabsContent value="inputs" className="min-h-0 flex-1 bg-[rgba(18,16,14,0.78)] clean-scrollbar overflow-y-auto" data-guide="inputs">
               {inputsPanel}
             </TabsContent>
-            <TabsContent value="plot" className="min-h-[420px] flex-1 bg-slate-50" data-guide="viewport">
+            <TabsContent value="plot" className="min-h-[420px] flex-1 bg-[#0a0908]" data-guide="viewport">
               {plot}
             </TabsContent>
-            <TabsContent value="inspector" className="min-h-0 flex-1 overflow-y-auto bg-white clean-scrollbar" data-guide="inspector">
+            <TabsContent value="inspector" className="min-h-0 flex-1 overflow-y-auto bg-[rgba(18,16,14,0.78)] text-white clean-scrollbar" data-guide="inspector">
               {inspector}
             </TabsContent>
           </Tabs>
@@ -164,10 +164,10 @@ export function Workbench() {
 
 function PanelTitle({ n, title, sticky }: { n: string; title: string; sticky?: boolean }) {
   return (
-    <div className={`flex h-[38px] items-center justify-between border-b border-slate-200 bg-slate-50/90 px-3.5 backdrop-blur-xs ${sticky ? "sticky top-0 z-10" : ""}`}>
+    <div className={`flex h-[38px] items-center justify-between border-b border-white/10 bg-[rgba(18,16,14,0.9)] px-3.5 backdrop-blur-md ${sticky ? "sticky top-0 z-10" : ""}`}>
       <div className="flex items-center gap-2">
-        <span className="flex size-4.5 items-center justify-center rounded-sm bg-blue-100 font-sans text-[10px] font-bold text-blue-700">{n}</span>
-        <h2 className="font-sans text-[11.5px] font-semibold text-slate-700 tracking-tight">{title}</h2>
+        <span className="flex size-4.5 items-center justify-center rounded-sm bg-white/10 border border-white/15 font-sans text-[10px] font-bold text-white">{n}</span>
+        <h2 className="font-sans text-[11.5px] font-semibold text-white/90 tracking-tight">{title}</h2>
       </div>
     </div>
   )
@@ -201,19 +201,19 @@ function AppHeader({
   const verifiedText = healthError ? "Server unreachable" : health ? `${health.rules_loaded} rules · ${health.verified_sources.ok}/${health.verified_sources.total} tables verified` : "Connecting…"
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-200 bg-white px-4 py-2 shadow-xs">
+    <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-white/10 bg-[rgba(10,9,8,0.85)] px-4 py-2 shadow-xs backdrop-blur-md text-white">
       {/* 1. Left: MIRA Logo + Subtitle */}
       <div className="flex items-center gap-3">
-        <div className="grid size-8 place-items-center rounded-lg border border-slate-900 bg-slate-900 p-1 text-white shadow-xs">
+        <div className="grid size-8 place-items-center rounded-lg border border-white/20 bg-white/10 p-1 text-white shadow-xs">
           <MiraMark size={20} />
         </div>
         <div className="leading-tight">
           <div className="flex items-center gap-2">
-            <h1 className="text-[17px] font-bold tracking-tight text-slate-900">
+            <h1 className="text-[17px] font-bold tracking-tight text-white">
               MIRA
             </h1>
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10.5px] font-medium text-slate-600">
-              <span className="size-1.5 rounded-full bg-emerald-500" />
+            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10.5px] font-medium text-stone-300">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Bhopal Municipal Corporation • Bhumi Vikas Rules
             </span>
           </div>
@@ -221,16 +221,16 @@ function AppHeader({
       </div>
 
       {/* 2. Center: Clean Navigation Tabs */}
-      <nav className="flex items-center rounded-lg border border-slate-200 bg-slate-100/80 p-0.5 shadow-2xs" aria-label="Main Navigation">
+      <nav className="flex items-center rounded-lg border border-white/10 bg-white/5 p-0.5 shadow-2xs" aria-label="Main Navigation">
         <button
           type="button"
           onClick={() => onNavChange("workbench")}
           className={cn(
             "flex items-center gap-1.5 rounded-md px-3 py-1 text-[12px] font-medium transition-all",
-            activeNav === "workbench" ? "bg-white text-slate-900 font-semibold shadow-xs" : "text-slate-600 hover:text-slate-900",
+            activeNav === "workbench" ? "bg-white/15 text-white font-semibold border border-white/25 shadow-xs" : "text-white/70 hover:text-white hover:bg-white/5",
           )}
         >
-          <LayoutGrid className="size-3.5 text-blue-600" />
+          <LayoutGrid className="size-3.5 text-amber-400" />
           <span>Workbench / नक्शा</span>
         </button>
         <button
@@ -238,10 +238,10 @@ function AppHeader({
           onClick={() => onNavChange("rules")}
           className={cn(
             "flex items-center gap-1.5 rounded-md px-3 py-1 text-[12px] font-medium transition-all",
-            activeNav === "rules" ? "bg-white text-slate-900 font-semibold shadow-xs" : "text-slate-600 hover:text-slate-900",
+            activeNav === "rules" ? "bg-white/15 text-white font-semibold border border-white/25 shadow-xs" : "text-white/70 hover:text-white hover:bg-white/5",
           )}
         >
-          <BookOpen className="size-3.5 text-slate-500" />
+          <BookOpen className="size-3.5 text-stone-300" />
           <span>Rule Book</span>
         </button>
         <button
@@ -249,10 +249,10 @@ function AppHeader({
           onClick={() => onNavChange("history")}
           className={cn(
             "flex items-center gap-1.5 rounded-md px-3 py-1 text-[12px] font-medium transition-all",
-            activeNav === "history" ? "bg-white text-slate-900 font-semibold shadow-xs" : "text-slate-600 hover:text-slate-900",
+            activeNav === "history" ? "bg-white/15 text-white font-semibold border border-white/25 shadow-xs" : "text-white/70 hover:text-white hover:bg-white/5",
           )}
         >
-          <History className="size-3.5 text-slate-500" />
+          <History className="size-3.5 text-stone-300" />
           <span>History</span>
         </button>
       </nav>
@@ -264,44 +264,44 @@ function AppHeader({
           type="button"
           onClick={onReset}
           title="Clear / Reset Workspace"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50 hover:text-rose-600 hover:border-rose-200 transition-colors shadow-2xs"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-stone-300 hover:bg-white/10 hover:text-rose-400 hover:border-rose-500/40 transition-colors shadow-2xs"
         >
           <RotateCcw className="size-3" aria-hidden />
           <span>Reset</span>
         </button>
 
         {/* Language toggle: [ English | हिंदी ] */}
-        <div className="flex items-center rounded-lg border border-slate-200 bg-slate-100 p-0.5 shadow-2xs" role="group" aria-label="Language selection">
+        <div className="flex items-center rounded-lg border border-white/15 bg-white/5 p-0.5 shadow-2xs" role="group" aria-label="Language selection">
           <button
             type="button"
             onClick={() => onLangChange("en")}
             className={cn(
               "flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium transition-colors",
-              lang === "en" ? "bg-white text-slate-900 font-semibold shadow-xs" : "text-slate-600 hover:text-slate-900",
+              lang === "en" ? "bg-white/15 text-white font-semibold border border-white/20 shadow-xs" : "text-stone-300 hover:text-white",
             )}
             aria-pressed={lang === "en"}
           >
-            <Globe2 className="size-3 text-slate-500" aria-hidden /> English
+            <Globe2 className="size-3 text-stone-300" aria-hidden /> English
           </button>
           <button
             type="button"
             onClick={() => onLangChange("hi")}
             className={cn(
               "flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium transition-colors",
-              lang === "hi" ? "bg-white text-blue-700 font-semibold shadow-xs" : "text-slate-600 hover:text-slate-900",
+              lang === "hi" ? "bg-white/15 text-amber-300 font-semibold border border-white/20 shadow-xs" : "text-stone-300 hover:text-white",
             )}
             aria-pressed={lang === "hi"}
           >
-            <Languages className="size-3 text-blue-600" aria-hidden /> हिंदी
+            <Languages className="size-3 text-amber-400" aria-hidden /> हिंदी
           </button>
         </div>
 
         {/* Subtle Database Status Pill */}
         <span
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] text-slate-600 shadow-2xs font-sans"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-stone-300 shadow-2xs font-sans"
           title="Consolidated to 06-03-2025 · Bhopal Municipal Corporation"
         >
-          <Database className="size-3 text-slate-400" aria-hidden />
+          <Database className="size-3 text-stone-400" aria-hidden />
           <span>{verifiedText}</span>
         </span>
 
@@ -313,7 +313,7 @@ function AppHeader({
           aria-expanded={guideOpen}
           aria-controls={GUIDE_PANEL_ID}
           onClick={onToggleGuide}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11.5px] font-semibold text-blue-700 hover:bg-blue-100 transition-colors shadow-2xs"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11.5px] font-semibold text-amber-300 hover:bg-amber-500/20 transition-colors shadow-2xs"
           title="Voice Guide"
         >
           <Headphones className="size-3.5" aria-hidden />
@@ -337,25 +337,25 @@ function RuleBookModal({ onClose, onSelectRule }: { onClose: () => void; onSelec
   const filtered = rules.filter((r) => r.num.includes(search) || r.title.toLowerCase().includes(search.toLowerCase()) || r.desc.toLowerCase().includes(search.toLowerCase()))
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-      <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+      <div className="w-full max-w-xl rounded-2xl border border-white/15 bg-[#12100e] p-5 shadow-2xl text-white animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <BookOpen className="size-4.5 text-blue-600" />
-            <h3 className="text-base font-bold text-slate-900">Bhopal Municipal Rule Book</h3>
+            <BookOpen className="size-4.5 text-amber-400" />
+            <h3 className="text-base font-bold text-white">Bhopal Municipal Rule Book</h3>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+          <button type="button" onClick={onClose} className="rounded-lg p-1 text-stone-400 hover:bg-white/10 hover:text-white">
             <X className="size-4.5" />
           </button>
         </div>
         <div className="mt-3.5 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search rules (e.g. 56, open spaces, FAR, parking)..."
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-white/15 bg-white/5 pl-9 pr-3 py-2 text-sm text-white placeholder-stone-400 outline-none focus:border-amber-400 focus:bg-white/10 focus:ring-1 focus:ring-amber-400/50"
           />
         </div>
         <div className="mt-3.5 max-h-80 overflow-y-auto space-y-2 clean-scrollbar pr-1">
@@ -363,17 +363,17 @@ function RuleBookModal({ onClose, onSelectRule }: { onClose: () => void; onSelec
             <div
               key={r.num}
               onClick={() => onSelectRule(`What is Rule ${r.num}? ${r.title}`)}
-              className="group cursor-pointer rounded-xl border border-slate-200 bg-white p-3 hover:border-blue-300 hover:bg-blue-50/40 transition-all shadow-2xs"
+              className="group cursor-pointer rounded-xl border border-white/10 bg-white/5 p-3 hover:border-amber-400/50 hover:bg-white/10 transition-all shadow-2xs"
             >
               <div className="flex items-center justify-between">
-                <span className="font-bold text-[13px] text-slate-900 group-hover:text-blue-700">
+                <span className="font-bold text-[13px] text-white group-hover:text-amber-300">
                   Rule {r.num} · {r.title}
                 </span>
-                <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+                <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-stone-300">
                   PDF p. {r.page}
                 </span>
               </div>
-              <p className="mt-1 text-[12px] text-slate-500">{r.desc}</p>
+              <p className="mt-1 text-[12px] text-stone-400">{r.desc}</p>
             </div>
           ))}
         </div>
@@ -390,31 +390,31 @@ function HistoryModal({ record, onClose, onAsk }: { record: ReturnType<typeof us
   ]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+      <div className="w-full max-w-lg rounded-2xl border border-white/15 bg-[#12100e] p-5 shadow-2xl text-white animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <History className="size-4.5 text-blue-600" />
-            <h3 className="text-base font-bold text-slate-900">Evaluation History</h3>
+            <History className="size-4.5 text-amber-400" />
+            <h3 className="text-base font-bold text-white">Evaluation History</h3>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+          <button type="button" onClick={onClose} className="rounded-lg p-1 text-stone-400 hover:bg-white/10 hover:text-white">
             <X className="size-4.5" />
           </button>
         </div>
         <div className="mt-4 space-y-2">
           {record && (
-            <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3 shadow-2xs">
-              <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wide">Current Evaluation</span>
-              <p className="mt-0.5 text-[13px] font-semibold text-slate-900">{record.question}</p>
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 shadow-2xs">
+              <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide">Current Evaluation</span>
+              <p className="mt-0.5 text-[13px] font-semibold text-white">{record.question}</p>
             </div>
           )}
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-3">Recent Inquiries</p>
+          <p className="text-[11px] font-bold text-stone-400 uppercase tracking-wider mt-3">Recent Inquiries</p>
           {recent.map((q, i) => (
             <button
               key={i}
               type="button"
               onClick={() => onAsk(q)}
-              className="w-full text-left rounded-xl border border-slate-200 bg-slate-50/60 p-3 text-[12.5px] text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-900 transition-all shadow-2xs"
+              className="w-full text-left rounded-xl border border-white/10 bg-white/5 p-3 text-[12.5px] text-stone-300 hover:bg-white/10 hover:border-amber-400/40 hover:text-white transition-all shadow-2xs"
             >
               {q}
             </button>
