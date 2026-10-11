@@ -31,3 +31,5 @@ window.ResizeObserver ||= class {
   unobserve() {}
   disconnect() {}
 } as unknown as typeof ResizeObserver
+// jsdom has no WebGL: report "unavailable" quietly so the plan fallback is exercised.
+HTMLCanvasElement.prototype.getContext = (() => null) as unknown as typeof HTMLCanvasElement.prototype.getContext
