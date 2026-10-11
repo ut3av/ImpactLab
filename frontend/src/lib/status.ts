@@ -46,11 +46,11 @@ export const STATUS_META: Record<Status, { label: string; hi: string; descriptio
 }
 
 export const TONE_CLASSES = {
-  verified: "border-verified/40 bg-verified-soft text-verified",
-  cobalt: "border-cobalt/35 bg-cobalt-soft text-cobalt",
-  review: "border-review/45 bg-review-soft text-[oklch(0.45_0.11_65)]",
-  alert: "border-alert/40 bg-alert-soft text-alert",
-  neutral: "border-border bg-muted text-muted-foreground",
+  verified: "border-emerald-300 bg-emerald-50 text-emerald-800",
+  cobalt: "border-blue-300 bg-blue-50 text-blue-800",
+  review: "border-amber-300 bg-amber-50 text-amber-900",
+  alert: "border-rose-300 bg-rose-50 text-rose-800",
+  neutral: "border-slate-300 bg-slate-100 text-slate-700",
 } as const
 
 export function ruleRef(rule: string, sub?: string | null) {

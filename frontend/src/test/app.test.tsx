@@ -45,7 +45,7 @@ describe("Workbench", () => {
   it("renders the three-panel workspace with empty states", async () => {
     mockFetch(routes)
     renderApp()
-    expect(screen.getByText("NIYAM")).toBeInTheDocument()
+    expect(screen.getByText("MIRA")).toBeInTheDocument()
     expect(screen.getByRole("form", { name: "Project inputs" })).toBeInTheDocument()
     expect(screen.getByText("No plot drawn yet")).toBeInTheDocument()
     expect(screen.getByText(/Ask a question in English or Hindi/)).toBeInTheDocument()

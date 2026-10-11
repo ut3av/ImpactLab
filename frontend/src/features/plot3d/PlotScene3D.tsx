@@ -16,8 +16,8 @@ type Props = {
 /** Html labels portal into a wrapper we own, so unmounting the canvas never removes their container first. */
 const PortalCtx = createContext<RefObject<HTMLDivElement> | null>(null)
 
-const PAPER = "#f1ede5"
-const INK = "#1f2a3d"
+const PAPER = "#f8fafc"
+const INK = "#0f172a"
 
 /** Lightweight scene: flat planes, one box, a few lines and labels; renders on demand only. */
 const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model, selected, onSelect, reducedMotion }, ref) {
@@ -55,18 +55,18 @@ const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model,
       aria-label="Interactive 3D plot view"
     >
       <color attach="background" args={[PAPER]} />
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[-20, 35, 25]} intensity={1.1} />
-      <hemisphereLight args={["#ffffff", "#d8d0c0", 0.35]} />
+      <ambientLight intensity={0.95} />
+      <directionalLight position={[-20, 35, 25]} intensity={1.2} />
+      <hemisphereLight args={["#ffffff", "#e2e8f0", 0.45]} />
       <Grid
         position={[0, -0.01, 0]}
         args={[200, 200]}
         cellSize={1}
         cellThickness={0.5}
-        cellColor="#d6cfc1"
+        cellColor="#e2e8f0"
         sectionSize={5}
         sectionThickness={0.9}
-        sectionColor="#bfb6a5"
+        sectionColor="#cbd5e1"
         fadeDistance={span * 4}
         fadeStrength={1.5}
         infiniteGrid
@@ -103,20 +103,20 @@ function Plot({ model, selected, onSelect }: { model: SceneModel; selected: stri
       {/* Plot surface */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]} onClick={(e) => { e.stopPropagation(); onSelect("plot") }}>
         <planeGeometry args={[plot.w, plot.d]} />
-        <meshStandardMaterial color={selected === "plot" ? "#e9e2d2" : "#f8f5ee"} />
+        <meshStandardMaterial color={selected === "plot" ? "#f1f5f9" : "#ffffff"} />
       </mesh>
       <Line points={boundary} color={INK} lineWidth={2.2} />
 
-      {/* Road along the frontage */}
+      {/* Road along the frontage (realistic asphalt tone) */}
       <group onClick={(e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); onSelect("road") }}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, hd + roadDepth / 2]}>
           <planeGeometry args={[Math.max(plot.w * 2.2, 30), roadDepth]} />
-          <meshStandardMaterial color={roadW ? "#8d929b" : "#b8bcc2"} transparent opacity={roadW ? 1 : 0.55} />
+          <meshStandardMaterial color={roadW ? "#334155" : "#475569"} transparent opacity={roadW ? 0.95 : 0.65} />
         </mesh>
         <Line
           points={[[-Math.max(plot.w * 1.1, 15), 0.02, hd + roadDepth / 2], [Math.max(plot.w * 1.1, 15), 0.02, hd + roadDepth / 2]]}
-          color="#f3efe6"
-          lineWidth={1.4}
+          color="#ffffff"
+          lineWidth={1.6}
           dashed
           dashSize={1.2}
           gapSize={1}
@@ -127,9 +127,9 @@ function Plot({ model, selected, onSelect }: { model: SceneModel; selected: stri
       </Tag>
 
       {/* Plot dimensions (user input) */}
-      <Line points={[[-hw, 0.04, hd + 0.35], [hw, 0.04, hd + 0.35]]} color={INK} lineWidth={1} />
+      <Line points={[[-hw, 0.04, hd + 0.35], [hw, 0.04, hd + 0.35]]} color="#475569" lineWidth={1.2} />
       <Tag position={[0, 0.05, hd + 0.9]} tone="ink">{`${plot.w} m`}</Tag>
-      <Line points={[[-hw - 0.35, 0.04, hd], [-hw - 0.35, 0.04, -hd]]} color={INK} lineWidth={1} />
+      <Line points={[[-hw - 0.35, 0.04, hd], [-hw - 0.35, 0.04, -hd]]} color="#475569" lineWidth={1.2} />
       <Tag position={[-hw - 1.3, 0.05, 0]} tone="ink">{`${plot.d} m`}</Tag>
 
       {model.zones.map((z) => (
@@ -209,11 +209,11 @@ function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["
       }}
     >
       <boxGeometry args={[b.w, b.h, b.d]} />
-      <meshStandardMaterial color={selected ? "#cfc6b4" : "#ddd6c8"} transparent opacity={0.9} roughness={0.9} />
-      <Edges color={INK} />
+      <meshStandardMaterial color={selected ? "#cbd5e1" : "#e2e8f0"} transparent opacity={0.88} roughness={0.4} />
+      <Edges color="#475569" />
       <Html position={[0, b.h / 2 + 0.6, 0]} center zIndexRange={[20, 0]} portal={portal ?? undefined}>
-        <span className="pointer-events-none rounded-sm border border-border bg-paper/95 px-1.5 py-0.5 font-mono text-[10px] whitespace-nowrap text-ink shadow-sm">
-          Proposed design · illustrative{b.heightGiven ? ` · ${b.h} m` : " · height not given"}
+        <span className="pointer-events-none rounded-md border border-slate-200 bg-white/95 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-slate-800 shadow-sm">
+          Proposed building · illustrative{b.heightGiven ? ` · ${b.h} m` : " · height not given"}
         </span>
       </Html>
     </mesh>
@@ -221,11 +221,11 @@ function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["
 }
 
 const TAG_TONES = {
-  ink: "border-ink/20 bg-paper text-ink",
-  neutral: "border-border bg-paper/90 text-muted-foreground",
-  cobalt: "border-cobalt/40 bg-cobalt-soft text-cobalt",
-  review: "border-review/50 bg-review-soft text-[oklch(0.45_0.11_65)]",
-  alert: "border-alert/50 bg-alert-soft text-alert",
+  ink: "border-slate-300 bg-white text-slate-800 shadow-xs",
+  neutral: "border-slate-200 bg-white/95 text-slate-600 shadow-xs",
+  cobalt: "border-blue-300 bg-blue-50 text-blue-700 shadow-xs font-semibold",
+  review: "border-amber-300 bg-amber-50 text-amber-800 shadow-xs font-semibold",
+  alert: "border-rose-300 bg-rose-50 text-rose-700 shadow-xs font-semibold",
 } as const
 
 function Tag({ position, tone, children, onClick }: { position: [number, number, number]; tone: keyof typeof TAG_TONES; children: string; onClick?: () => void }) {
@@ -236,7 +236,7 @@ function Tag({ position, tone, children, onClick }: { position: [number, number,
         type="button"
         tabIndex={-1}
         onClick={onClick}
-        className={`rounded-sm border px-1.5 py-0.5 font-mono text-[10px] whitespace-nowrap shadow-sm ${TAG_TONES[tone]} ${onClick ? "cursor-pointer" : "pointer-events-none"}`}
+        className={`rounded-md border px-2 py-0.5 font-mono text-[10px] whitespace-nowrap shadow-xs ${TAG_TONES[tone]} ${onClick ? "cursor-pointer hover:border-blue-400" : "pointer-events-none"}`}
       >
         {children}
       </button>

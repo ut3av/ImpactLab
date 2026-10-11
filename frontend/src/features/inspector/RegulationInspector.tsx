@@ -34,18 +34,15 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
   if (!record) return <InspectorEmpty />
 
   return (
-    <div className="space-y-4 p-4">
-      <header className="space-y-2">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="panel-label">{record.kind === "answer" ? "Question" : "Evaluation"}</p>
-            <p lang={record.language} className="mt-0.5 text-[14px] leading-snug font-medium text-ink">
-              {record.question}
-            </p>
-          </div>
-          <Button size="sm" variant="outline" onClick={onReceipt} className="no-print shrink-0">
-            <Printer className="size-3.5" aria-hidden /> Counter Receipt
-          </Button>
+    <div className="space-y-4 p-4 text-slate-900">
+      <header className="space-y-3">
+        <div>
+          <p className="font-mono text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
+            {record.kind === "answer" ? "Question Examined" : "Statutory Evaluation"}
+          </p>
+          <p lang={record.language} className="mt-1 text-[15px] leading-snug font-semibold text-slate-900">
+            {record.question}
+          </p>
         </div>
         <StatusBanner record={record} />
       </header>
@@ -53,85 +50,95 @@ export function RegulationInspector({ record, selected, onSelect, onReceipt, err
       {selected && <SelectionNote selected={selected} record={record} onClear={() => onSelect(null)} />}
 
       {record.answerText && (
-        <section aria-label="Answer" className="rounded-sm border bg-card p-3 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
-          <div className="mb-1.5 flex items-center gap-2">
+        <section aria-label="Answer" className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+          <div className="mb-2 flex items-center gap-2">
             {record.answerSource === "ai" ? (
-              <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-wider text-cobalt uppercase">
+              <span className="inline-flex items-center gap-1 font-mono text-[10.5px] font-semibold tracking-wider text-blue-700 uppercase bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                 <Sparkles className="size-3" aria-hidden /> AI explanation{record.answerModel ? ` · ${record.answerModel}` : ""}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-                <SquareFunction className="size-3" aria-hidden /> Deterministic summary
+              <span className="inline-flex items-center gap-1 font-mono text-[10.5px] font-semibold tracking-wider text-slate-600 uppercase bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                <SquareFunction className="size-3 text-slate-500" aria-hidden /> Deterministic summary
               </span>
             )}
           </div>
-          <p lang={record.language} className={cn("text-[14px] leading-relaxed text-ink", record.primary === "NOT_FOUND" && "font-medium")}>
+          <p lang={record.language} className={cn("text-[14px] leading-relaxed text-slate-800", record.primary === "NOT_FOUND" && "font-medium text-slate-700")}>
             {record.answerText}
           </p>
-          {record.answerNote && <p className="mt-2 text-[11.5px] text-muted-foreground">{record.answerNote}</p>}
+          {record.answerNote && <p className="mt-2.5 text-[11.5px] text-slate-500 leading-relaxed border-t border-slate-100 pt-2">{record.answerNote}</p>}
           {record.language === "hi" && (
-            <p className="mt-1 text-[11.5px] text-muted-foreground">Hindi text is an explanation, not a quotation from the official Hindi PDF.</p>
+            <p className="mt-1 text-[11px] text-slate-400">Hindi text is an explanation, not a quotation from the official Hindi PDF.</p>
           )}
         </section>
       )}
 
       {record.warnings.map((w) => (
-        <section key={w.code} role="note" className="rounded-sm border border-review/50 bg-review-soft p-3">
-          <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[oklch(0.42_0.1_65)]">
-            <AlertTriangle className="size-3.5" aria-hidden /> {w.title}
+        <section key={w.code} role="note" className="rounded-xl border border-amber-300 bg-amber-50/80 p-3.5 shadow-2xs">
+          <p className="flex items-center gap-1.5 text-[13px] font-bold text-amber-900">
+            <AlertTriangle className="size-4 text-amber-600 shrink-0" aria-hidden /> {w.title}
           </p>
-          <p className="mt-1 text-[12.5px] leading-snug text-ink/85">{w.detail}</p>
+          <p className="mt-1 text-[12.5px] leading-snug text-amber-950/80">{w.detail}</p>
           {w.source_url && (
-            <a href={w.source_url} target="_blank" rel="noreferrer noopener" className="mt-1.5 inline-flex items-center gap-1 text-[12px] text-cobalt underline-offset-2 hover:underline">
-              Amendment reference (external, not verified by NIYAMLENS) <ExternalLink className="size-3" aria-hidden />
+            <a href={w.source_url} target="_blank" rel="noreferrer noopener" className="mt-2 inline-flex items-center gap-1 text-[11.5px] font-semibold text-blue-700 underline-offset-2 hover:underline">
+              Amendment reference (external, not verified by MIRA) <ExternalLink className="size-3" aria-hidden />
             </a>
           )}
         </section>
       ))}
 
       {record.missing.length > 0 && (
-        <section aria-label="Missing information" className="rounded-sm border border-dashed border-review/60 p-3">
-          <p className="panel-label mb-2 text-[oklch(0.45_0.11_65)]!">More information needed</p>
+        <section aria-label="Missing information" className="rounded-xl border border-dashed border-amber-300 bg-amber-50/50 p-3.5 shadow-2xs">
+          <p className="font-mono text-[11px] font-bold tracking-wide uppercase text-amber-900 mb-2">More information needed</p>
           <ul className="space-y-1.5">
             {record.missing.map((m) => (
               <li key={m.field} className="text-[12.5px] leading-snug">
-                <span className="font-medium text-ink">{m.label}</span>
-                <span className="text-muted-foreground"> — {m.reason}</span>
+                <span className="font-semibold text-slate-900">{m.label}</span>
+                <span className="text-slate-600"> — {m.reason}</span>
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-[11.5px] text-muted-foreground">Add these in Project inputs and evaluate again. No value is assumed.</p>
+          <p className="mt-2.5 text-[11.5px] text-slate-500">Add these in Project inputs and evaluate again. No value is assumed.</p>
         </section>
       )}
 
       {record.calcs.length > 0 && (
-        <section aria-label="Calculations" className="space-y-2">
-          <p className="panel-label">Rule-to-geometry results</p>
+        <section aria-label="Calculations" className="space-y-3">
+          <p className="font-mono text-[10.5px] font-bold tracking-wider text-slate-500 uppercase">Rule-to-geometry results</p>
           {record.calcs.map((c) => (
             <CalcCard key={c.calc_type} calc={c} active={selCalcType === c.calc_type} onOpenRule={setRuleOpen} onSelect={onSelect} />
           ))}
         </section>
       )}
 
-      <section aria-label="Evidence" className="space-y-2">
-        <p className="panel-label">Evidence from the supplied rules</p>
+      <section aria-label="Evidence" className="space-y-3">
+        <p className="font-mono text-[10.5px] font-bold tracking-wider text-slate-500 uppercase">Evidence from the supplied rules</p>
         {record.citations.length === 0 ? (
-          <p className="text-[12.5px] text-muted-foreground">No rule passage supports an answer. Nothing is cited.</p>
+          <p className="text-[12.5px] text-slate-500 rounded-lg border border-slate-200 bg-slate-50 p-3">No rule passage supports an answer. Nothing is cited.</p>
         ) : (
           record.citations.map((c, i) => <CitationCard key={(c.chunk_id ?? "") + i} c={c} onOpenRule={setRuleOpen} />)
         )}
       </section>
 
       {record.searched && (
-        <details className="group rounded-sm border bg-paper p-2.5 text-[12px]">
-          <summary className="flex cursor-pointer list-none items-center gap-1 text-muted-foreground">
-            <ChevronDown className="size-3 transition-transform group-open:rotate-180" aria-hidden /> What was searched
+        <details className="group rounded-xl border border-slate-200 bg-slate-50/80 p-3 text-[12px]">
+          <summary className="flex cursor-pointer list-none items-center gap-1.5 font-medium text-slate-600">
+            <ChevronDown className="size-3.5 text-slate-400 transition-transform group-open:rotate-180" aria-hidden /> What was searched
           </summary>
-          <p className="mt-2 font-mono text-[11px] text-ink/80">Terms: {record.searched.terms.join(", ") || "—"}</p>
-          <p className="mt-1 font-mono text-[11px] text-ink/80">Rules ranked: {record.searched.rules.join(", ") || "—"}</p>
-          <p className="mt-1 text-[11px] text-muted-foreground">Local search over 106 rule records (English consolidated text up to 6 Mar 2025).</p>
+          <p className="mt-2 font-mono text-[11px] text-slate-700">Terms: {record.searched.terms.join(", ") || "—"}</p>
+          <p className="mt-1 font-mono text-[11px] text-slate-700">Rules ranked: {record.searched.rules.join(", ") || "—"}</p>
+          <p className="mt-1 text-[11px] text-slate-400">Local search over 106 rule records (English consolidated text up to 6 Mar 2025).</p>
         </details>
       )}
+
+      {/* Prominent Bottom Action: Print / Export Counter Receipt */}
+      <div className="sticky bottom-0 border-t border-slate-200 bg-white/95 p-3.5 backdrop-blur-xs shadow-[0_-4px_12px_rgba(0,0,0,0.04)] -mx-4 -mb-4 mt-6">
+        <Button
+          onClick={onReceipt}
+          className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[13px] h-9.5 rounded-lg shadow-xs transition-all active:scale-99 flex items-center justify-center gap-2"
+        >
+          <Printer className="size-4" aria-hidden /> Print / Export Counter Receipt
+        </Button>
+      </div>
 
       {ruleOpen && <RuleDrawer id={ruleOpen} onClose={() => setRuleOpen(null)} />}
     </div>
@@ -166,15 +173,15 @@ function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; ac
       ref={ref}
       data-active={active}
       className={cn(
-        "rounded-sm border bg-card p-3 transition-shadow",
-        active && "ring-2 ring-cobalt/50",
-        !resolved && "border-review/50",
+        "rounded-xl border border-slate-200 bg-white p-4 shadow-xs transition-all",
+        active && "ring-2 ring-blue-500/70 border-blue-300",
+        !resolved && "border-amber-300 bg-amber-50/15",
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-[12.5px] font-medium text-ink">{calc.label}</p>
-          <p className={cn("mt-0.5 font-mono text-[20px] leading-tight font-semibold tabular-nums", resolved ? "text-ink" : "text-[oklch(0.45_0.11_65)]")}>
+          <p className="text-[13px] font-semibold text-slate-700">{calc.label}</p>
+          <p className={cn("mt-1 font-mono text-[22px] leading-tight font-bold tabular-nums", resolved ? "text-slate-900" : "text-amber-700")}>
             {calc.display_value && resolved ? calc.display_value : calc.display_value ? `${calc.display_value} (provisional)` : "Unresolved"}
           </p>
         </div>
@@ -182,15 +189,15 @@ function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; ac
       </div>
 
       {calc.zones.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1">
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
           {calc.zones.map((z) => (
             <button
               key={z.side}
               type="button"
               onClick={() => onSelect(`${calc.calc_type}:${z.side}`)}
               className={cn(
-                "rounded-sm border px-1.5 py-0.5 font-mono text-[10.5px]",
-                z.check === "below_minimum" ? "border-alert/50 bg-alert-soft text-alert" : z.check === "meets_minimum" ? "border-verified/40 bg-verified-soft text-verified" : "border-border bg-muted text-muted-foreground",
+                "rounded-md border px-2 py-0.8 font-mono text-[10.5px] font-medium transition-colors",
+                z.check === "below_minimum" ? "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100" : z.check === "meets_minimum" ? "border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100" : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100",
               )}
               title="Highlight on plot"
             >
@@ -202,31 +209,34 @@ function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; ac
       )}
 
       {Object.keys(calc.inputs_used).length > 0 && (
-        <dl className="mt-2.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[11.5px]">
+        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border border-slate-100 bg-slate-50/60 p-2.5 text-[11.5px]">
           {Object.entries(calc.inputs_used).map(([k, v]) => (
             <div key={k} className="contents">
-              <dt className="text-muted-foreground">{INPUT_LABELS[k] ?? k}</dt>
-              <dd className="font-mono text-ink tabular-nums">{String(v)}</dd>
+              <dt className="text-slate-500 font-medium">{INPUT_LABELS[k] ?? k}</dt>
+              <dd className="font-mono text-slate-800 font-semibold tabular-nums text-right">{String(v)}</dd>
             </div>
           ))}
         </dl>
       )}
 
       {calc.steps.length > 0 && (
-        <ol className="mt-2.5 space-y-1 border-l border-rule-line pl-3 text-[12px] leading-snug text-ink/85">
-          {calc.steps.map((s, i) => (
-            <li key={i}>{s}</li>
-          ))}
-        </ol>
+        <div className="mt-3 rounded-lg border border-slate-200/80 bg-slate-50/80 p-2.5">
+          <p className="font-mono text-[10px] font-bold tracking-wider text-slate-500 uppercase mb-1.5">Deterministic Math Breakdown</p>
+          <ol className="space-y-1 border-l-2 border-blue-500 pl-3 text-[12px] leading-relaxed text-slate-700 font-mono">
+            {calc.steps.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ol>
+        </div>
       )}
 
       {calc.conditional_results.length > 0 && (
-        <div className="mt-2.5 rounded-sm bg-review-soft/70 p-2">
-          <p className="mb-1 text-[11px] font-medium text-[oklch(0.42_0.1_65)]">Conditional — not applied until confirmed</p>
-          <ul className="space-y-1 text-[12px] text-ink/85">
+        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/70 p-2.5">
+          <p className="mb-1 text-[11px] font-bold text-amber-900">Conditional — not applied until confirmed</p>
+          <ul className="space-y-1 text-[12px] text-amber-950/80">
             {calc.conditional_results.map((r, i) => (
               <li key={i}>
-                <span className="text-muted-foreground">{r.condition}:</span> {r.result} <span className="font-mono text-[10.5px] text-muted-foreground">(Rule {r.rule})</span>
+                <span className="font-medium text-amber-900">{r.condition}:</span> {r.result} <span className="font-mono text-[10.5px] text-slate-500">(Rule {r.rule})</span>
               </li>
             ))}
           </ul>
@@ -234,7 +244,7 @@ function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; ac
       )}
 
       {calc.conditions.length > 0 && (
-        <ul className="mt-2 space-y-0.5 text-[11.5px] text-muted-foreground">
+        <ul className="mt-2 space-y-0.5 text-[11.5px] text-slate-500">
           {calc.conditions.map((c, i) => (
             <li key={i}>{c}</li>
           ))}
@@ -242,38 +252,43 @@ function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; ac
       )}
 
       {Object.keys(calc.breakdown).length > 0 && calc.calc_type === "building_permission_fee" && (
-        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 text-[11.5px]">
+        <dl className="mt-2.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-lg border border-slate-100 bg-slate-50 p-2.5 text-[11.5px]">
           {"application_fee_rs" in calc.breakdown && (
             <>
-              <dt className="text-muted-foreground">Application fee (Rule 21(2)(ii))</dt>
-              <dd className="font-mono">Rs. {Number(calc.breakdown.application_fee_rs).toLocaleString("en-IN")}</dd>
+              <dt className="text-slate-500">Application fee (Rule 21(2)(ii))</dt>
+              <dd className="font-mono font-semibold text-slate-800 text-right">Rs. {Number(calc.breakdown.application_fee_rs).toLocaleString("en-IN")}</dd>
             </>
           )}
           {"permission_fee_rs" in calc.breakdown && (
             <>
-              <dt className="text-muted-foreground">Permission fee (Rule 21(3))</dt>
-              <dd className="font-mono">Rs. {Number(calc.breakdown.permission_fee_rs).toLocaleString("en-IN")}</dd>
+              <dt className="text-slate-500">Permission fee (Rule 21(3))</dt>
+              <dd className="font-mono font-semibold text-slate-800 text-right">Rs. {Number(calc.breakdown.permission_fee_rs).toLocaleString("en-IN")}</dd>
             </>
           )}
         </dl>
       )}
 
-      {calc.summary_en && !resolved && <p className="mt-2 text-[12px] leading-snug text-ink/80">{calc.summary_en}</p>}
+      {calc.summary_en && !resolved && <p className="mt-2 text-[12px] leading-snug text-slate-600">{calc.summary_en}</p>}
 
       {calc.notes.length > 0 && (
-        <ul className="mt-2 space-y-1 text-[11.5px] leading-snug text-muted-foreground">
+        <ul className="mt-2.5 space-y-1 text-[11.5px] leading-snug text-slate-500">
           {calc.notes.map((n, i) => (
             <li key={i} className="flex gap-1.5">
-              <Info className="mt-0.5 size-3 shrink-0" aria-hidden />
+              <Info className="mt-0.5 size-3.5 shrink-0 text-slate-400" aria-hidden />
               {n}
             </li>
           ))}
         </ul>
       )}
 
-      <div className="mt-2.5 flex flex-wrap gap-1">
+      <div className="mt-3 flex flex-wrap gap-1.5">
         {calc.citations.map((c, i) => (
-          <button key={i} type="button" onClick={() => onOpenRule(c.rule)} className="rounded-sm border border-cobalt/30 bg-cobalt-soft px-1.5 py-0.5 font-mono text-[10.5px] text-cobalt hover:bg-cobalt/10">
+          <button
+            key={i}
+            type="button"
+            onClick={() => onOpenRule(c.rule)}
+            className="rounded-md border border-blue-200 bg-blue-50 px-2 py-0.8 font-mono text-[10.5px] font-semibold text-blue-700 transition-colors hover:bg-blue-100"
+          >
             R{c.rule}
             {c.sub_rule} · p.{c.page}
           </button>
@@ -286,30 +301,36 @@ function CalcCard({ calc, active, onOpenRule, onSelect }: { calc: CalcResult; ac
 function CitationCard({ c, onOpenRule }: { c: Citation; onOpenRule: (id: string) => void }) {
   const [open, setOpen] = useState(c.passage.length < 700)
   return (
-    <article className="rounded-sm border bg-card p-3">
+    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs transition-shadow hover:shadow-sm">
       <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
-        <p className="font-mono text-[12.5px] font-semibold text-ink">
+        <p className="font-mono text-[13.5px] font-bold text-slate-900">
           Rule {c.rule}
           {c.sub_rule ?? ""}
-          <span className="ml-1.5 font-sans text-[12px] font-normal text-muted-foreground">{c.title}</span>
+          <span className="ml-2 font-sans text-[12.5px] font-normal text-slate-500">{c.title}</span>
         </p>
-        <span className="font-mono text-[11px] text-muted-foreground">PDF p. {c.page}</span>
+        <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600">
+          PDF p. {c.page}
+        </span>
       </div>
-      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
         {c.verified_table && (
-          <span className="rounded-sm border border-verified/40 bg-verified-soft px-1.5 py-0.5 font-mono text-[9.5px] tracking-wide text-verified uppercase">Table checked against PDF</span>
+          <span className="rounded-md border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800 tracking-wide uppercase">
+            Table checked against PDF
+          </span>
         )}
-        <span className="text-[10.5px] text-muted-foreground">Source text · {c.document}</span>
+        <span className="text-[11px] font-medium text-slate-400">Source text · {c.document}</span>
       </div>
-      <blockquote className={cn("source-quote mt-2", !open && "max-h-40 overflow-hidden [mask-image:linear-gradient(black_70%,transparent)]")}>{c.passage}</blockquote>
-      <div className="mt-1.5 flex gap-3">
-        {c.passage.length >= 700 && (
-          <button type="button" className="text-[11.5px] text-cobalt hover:underline" onClick={() => setOpen((o) => !o)}>
+      <blockquote className={cn("source-quote mt-2.5", !open && "max-h-40 overflow-hidden [mask-image:linear-gradient(black_70%,transparent)]")}>
+        {c.passage}
+      </blockquote>
+      <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-[12px]">
+        {c.passage.length >= 700 ? (
+          <button type="button" className="font-medium text-blue-600 hover:text-blue-800 hover:underline" onClick={() => setOpen((o) => !o)}>
             {open ? "Show less" : "Show full passage"}
           </button>
-        )}
-        <button type="button" className="inline-flex items-center gap-1 text-[11.5px] text-cobalt hover:underline" onClick={() => onOpenRule(c.rule)}>
-          <BookOpen className="size-3" aria-hidden /> Open whole rule
+        ) : <span />}
+        <button type="button" className="inline-flex items-center gap-1 font-medium text-blue-600 hover:text-blue-800 hover:underline" onClick={() => onOpenRule(c.rule)}>
+          <BookOpen className="size-3.5" aria-hidden /> Open whole rule
         </button>
       </div>
     </article>
@@ -337,43 +358,43 @@ function RuleDrawer({ id, onClose }: { id: string; onClose: () => void }) {
     return () => window.removeEventListener("keydown", onKey)
   }, [onClose])
   return (
-    <div className="no-print fixed inset-0 z-50 flex justify-end bg-ink/25" onClick={onClose}>
+    <div className="no-print fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs" onClick={onClose}>
       <aside
         role="dialog"
         aria-modal="true"
         aria-label={`Rule ${id}`}
-        className="flex h-full w-full max-w-xl flex-col bg-paper shadow-xl"
+        className="flex h-full w-full max-w-xl flex-col bg-white shadow-2xl border-l border-slate-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b px-4 py-3">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3">
           <div>
-            <p className="panel-label">Full rule text</p>
-            <p className="font-mono text-sm font-semibold">
+            <p className="font-mono text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">Full rule text</p>
+            <p className="font-mono text-sm font-bold text-slate-900">
               Rule {id}
-              {rule && <span className="ml-2 font-sans font-normal text-muted-foreground">{rule.title}</span>}
+              {rule && <span className="ml-2 font-sans font-normal text-slate-500">{rule.title}</span>}
             </p>
           </div>
-          <Button size="icon-sm" variant="ghost" onClick={onClose} aria-label="Close">
+          <Button size="icon-sm" variant="ghost" onClick={onClose} aria-label="Close" className="text-slate-500 hover:text-slate-800">
             <X className="size-4" />
           </Button>
         </div>
-        <div className="flex-1 space-y-3 overflow-y-auto p-4">
-          {err && <p className="text-sm text-alert">{err}</p>}
-          {!rule && !err && <p className="font-mono text-xs text-muted-foreground">Loading…</p>}
+        <div className="flex-1 space-y-3.5 overflow-y-auto p-4 clean-scrollbar text-slate-900">
+          {err && <p className="text-sm font-medium text-rose-600">{err}</p>}
+          {!rule && !err && <p className="font-mono text-xs text-slate-400">Loading…</p>}
           {rule && (
             <>
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-[12px] text-slate-500 font-medium">
                 {rule.part} · PDF pages {rule.page_start}–{rule.page_end}
                 {rule.embedded_in && ` · printed inside Rule ${rule.embedded_in}`}
               </p>
               {rule.passages.map((p) => (
                 <div key={p.chunk_id}>
-                  <p className="mb-1 font-mono text-[10.5px] text-muted-foreground">
+                  <p className="mb-1 font-mono text-[11px] font-medium text-slate-500">
                     PDF p. {p.page}
                     {p.sub_rule ? ` · ${p.sub_rule}` : ""}
                     {p.is_comment ? " · court comment (not rule text)" : ""}
                   </p>
-                  <blockquote className={cn("source-quote", p.is_comment && "border-rule-line opacity-80")}>{p.text}</blockquote>
+                  <blockquote className={cn("source-quote", p.is_comment && "border-slate-300 opacity-80")}>{p.text}</blockquote>
                 </div>
               ))}
             </>
@@ -408,15 +429,15 @@ function SelectionNote({ selected, record, onClear }: { selected: string; record
       : `No verified dimension can be drawn: ${calc?.missing_inputs.map((m) => m.label).join("; ") || "the applicable rule could not be established"}.`
   }
   return (
-    <div className="flex items-start gap-2 rounded-sm border border-cobalt/35 bg-cobalt-soft/60 p-2.5">
-      <FileText className="mt-0.5 size-3.5 shrink-0 text-cobalt" aria-hidden />
+    <div className="flex items-start gap-2.5 rounded-xl border border-blue-200 bg-blue-50/80 p-3 shadow-2xs">
+      <FileText className="mt-0.5 size-4 shrink-0 text-blue-600" aria-hidden />
       <div className="flex-1">
-        <p className="text-[12.5px] font-medium text-ink">{title}</p>
-        <p className="mt-0.5 text-[12px] leading-snug text-ink/80">{body}</p>
-        {selected === "building" && <StatusBadge status="ILLUSTRATIVE_ONLY" className="mt-1.5" />}
+        <p className="text-[13px] font-semibold text-slate-900">{title}</p>
+        <p className="mt-0.5 text-[12px] leading-snug text-slate-700">{body}</p>
+        {selected === "building" && <StatusBadge status="ILLUSTRATIVE_ONLY" className="mt-2" />}
       </div>
-      <button type="button" onClick={onClear} aria-label="Clear selection" className="text-muted-foreground hover:text-ink">
-        <X className="size-3.5" />
+      <button type="button" onClick={onClear} aria-label="Clear selection" className="text-slate-400 hover:text-slate-700 transition-colors">
+        <X className="size-4" />
       </button>
     </div>
   )
@@ -424,27 +445,29 @@ function SelectionNote({ selected, record, onClear }: { selected: string; record
 
 function InspectorEmpty() {
   return (
-    <div className="space-y-4 p-5">
-      <p className="panel-label">Regulation inspector</p>
-      <p className="text-[14px] leading-relaxed text-ink">
-        Ask a question in English or Hindi, or enter project inputs and evaluate a requirement. Every result shows its rule number, PDF page and the exact source text.
-      </p>
-      <ul className="space-y-2 text-[12.5px] text-muted-foreground">
-        <li>• Values are computed only from tables checked against the supplied English PDF.</li>
-        <li>• Missing inputs are asked for, never assumed.</li>
-        <li>• Questions outside the rules return “Not found in the supplied rules.”</li>
-      </ul>
+    <div className="space-y-4 p-5 text-slate-900">
+      <p className="font-mono text-[10.5px] font-bold tracking-wider text-slate-500 uppercase">Regulation inspector</p>
+      <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 shadow-2xs space-y-2.5">
+        <p className="text-[14px] leading-relaxed font-medium text-slate-800">
+          Ask a question in English or Hindi, or enter project inputs and evaluate a requirement. Every result shows its rule number, PDF page and the exact source text.
+        </p>
+        <ul className="space-y-2 text-[12.5px] text-slate-600">
+          <li className="flex items-start gap-1.5"><span className="text-blue-600 font-bold">•</span> Values are computed only from tables checked against the supplied English PDF.</li>
+          <li className="flex items-start gap-1.5"><span className="text-blue-600 font-bold">•</span> Missing inputs are asked for, never assumed.</li>
+          <li className="flex items-start gap-1.5"><span className="text-blue-600 font-bold">•</span> Questions outside the rules return “Not found in the supplied rules.”</li>
+        </ul>
+      </div>
     </div>
   )
 }
 
 function InspectorSkeleton() {
   return (
-    <div className="space-y-3 p-4" aria-busy="true" aria-label="Loading">
-      <div className="h-4 w-2/3 animate-pulse rounded-sm bg-muted" />
-      <div className="h-6 w-1/3 animate-pulse rounded-sm bg-muted" />
-      <div className="h-24 animate-pulse rounded-sm bg-muted" />
-      <div className="h-32 animate-pulse rounded-sm bg-muted" />
+    <div className="space-y-3.5 p-4" aria-busy="true" aria-label="Loading">
+      <div className="h-4 w-2/3 animate-pulse rounded-md bg-slate-200" />
+      <div className="h-6 w-1/3 animate-pulse rounded-md bg-slate-200" />
+      <div className="h-24 animate-pulse rounded-xl bg-slate-100" />
+      <div className="h-32 animate-pulse rounded-xl bg-slate-100" />
     </div>
   )
 }

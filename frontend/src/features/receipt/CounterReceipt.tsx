@@ -62,10 +62,10 @@ export function CounterReceipt({ record, onBack }: { record: InspectionRecord; o
         <header className="flex items-start justify-between border-b-2 border-ink pb-4">
           <div>
             <p className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">Counter Receipt</p>
-            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight">
-              NIYAM<span className="text-cobalt">LENS</span>
+            <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-slate-900">
+              MIRA
             </h1>
-            <p className="text-[12px] text-muted-foreground">Visual Building Regulation Intelligence · “See the rule. Understand its impact.”</p>
+            <p className="text-[12px] text-muted-foreground">Municipal Building Regulation Intelligence · “See the Rule. Understand Its Impact.” · Bhopal Municipal Corporation</p>
           </div>
           <dl className="text-right font-mono text-[11px] leading-5">
             <div>

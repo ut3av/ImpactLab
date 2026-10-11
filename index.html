@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRA — Bhumi Vikas Sahayak</title>
+  <style>
+    @font-face {
+      font-family: 'SF Pro';
+      font-weight: 400;
+      src: local('SF Pro Text'), local('SF Pro'), local('Helvetica Neue'), local('Arial');
+    }
+    @font-face {
+      font-family: 'SF Pro';
+      font-weight: 700;
+      src: local('SF Pro Text Bold'), local('SF Pro Bold'), local('Helvetica Neue Bold'), local('Arial Bold');
+    }
+    @font-face {
+      font-family: 'SF Pro Thin';
+      font-weight: 100;
+      src: local('SF Pro Text Thin'), local('SF Pro Thin'), local('Helvetica Neue UltraLight');
+    }
+    @font-face {
+      font-family: 'Aalto';
+      font-weight: 400;
+      src: local('Aalto'), local('Arial Narrow'), local('Oswald'), local('Impact');
+    }
+
+    :root {
+      font-family: 'SF Pro', Arial, sans-serif;
+      color: #fff;
+      background: #090807;
+      font-synthesis: none;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #090807;
+      color: #fff;
+      cursor: none !important;
+    }
+
+    a, button {
+      cursor: none !important;
+    }
+
+    .experience {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #090807;
+    }
+
+    /* ====================================================================
+       BACKGROUND LAYER
+       ==================================================================== */
+    .backgrounds {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .background {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.03);
+      transition: opacity 1.4s var(--ease), transform 2s var(--ease);
+      will-change: opacity, transform;
+    }
+
+    .background.is-visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .shade {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(9, 8, 7, 0.1) 0%, rgba(9, 8, 7, 0.65) 75%, #090807 100%),
+                  linear-gradient(to bottom, rgba(9, 8, 7, 0.5) 0%, transparent 22%, transparent 75%, rgba(9, 8, 7, 0.9) 100%);
+    }
+
+    .scene-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ====================================================================
+       PRELOADER
+       ==================================================================== */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #090807;
+      transition: opacity 1s var(--ease), visibility 1s var(--ease);
+    }
+
+    .preloader.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .preloader video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.8;
+    }
+
+    .preloader-shade {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(9, 8, 7, 0.25) 0%, #090807 88%);
+      pointer-events: none;
+    }
+
+    .floating-logo {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1.3);
+      width: 44px;
+      height: 44px;
+      z-index: 90;
+      transition: top 1.2s var(--ease), left 1.2s var(--ease), transform 1.2s var(--ease);
+      pointer-events: auto;
+    }
+
+    .floating-logo.is-docked {
+      top: 36px;
+      left: 48px;
+      transform: translate(0, 0) scale(1);
+    }
+
+    .preloader-count {
+      position: fixed;
+      bottom: 48px;
+      left: 48px;
+      z-index: 85;
+      font-family: 'SF Pro Thin', 'SF Pro', sans-serif;
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 100;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.95);
+      transition: opacity 0.8s var(--ease);
+      pointer-events: none;
+    }
+
+    .preloader-count.is-hidden {
+      opacity: 0;
+    }
+
+    .preloader-count .percent {
+      font-size: 0.38em;
+      margin-left: 4px;
+      vertical-align: super;
+      opacity: 0.6;
+    }
+
+    /* ====================================================================
+       HERO CONTENT
+       ==================================================================== */
+    .chrome {
+      position: relative;
+      z-index: 20;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+      will-change: opacity, transform;
+    }
+
+    .chrome.is-ready {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .planet-content {
+      position: fixed;
+      left: 48px;
+      bottom: 48px;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    #planet-title {
+      font-family: 'Aalto', 'Arial Narrow', sans-serif;
+      font-size: clamp(4.5rem, 13vw, 12rem);
+      font-weight: 400;
+      line-height: 0.85;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .descent-caption {
+      margin-top: 14px;
+      font-family: 'SF Pro', monospace;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .enter-btn {
+      margin-top: 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 26px;
+      font-family: 'SF Pro', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 9999px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      cursor: none !important;
+      pointer-events: auto;
+      transition: all 0.3s var(--ease);
+    }
+
+    .enter-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.65);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .enter-btn:active {
+      transform: translateY(0);
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    /* ====================================================================
+       CUSTOM CURSOR
+       ==================================================================== */
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .cursor-dot {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 9999px;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.85);
+      transition: background 0.2s ease, width 0.2s ease, height 0.2s ease;
+    }
+
+    .cursor-orbit {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
+      border-radius: 9999px;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s var(--ease), height 0.3s var(--ease), border-color 0.3s ease, background 0.3s ease;
+    }
+
+    .custom-cursor.is-hover .cursor-orbit {
+      width: 50px;
+      height: 50px;
+      border-color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .custom-cursor.is-down .cursor-orbit {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .floating-logo {
+        top: 24px;
+        left: 24px;
+      }
+      .planet-content {
+        left: 24px;
+        bottom: 32px;
+      }
+      #planet-title {
+        font-size: clamp(3.8rem, 18vw, 8rem);
+      }
+      .descent-caption {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="experience">
+    <div class="backgrounds" aria-hidden="true">
+      <video id="earth-background" class="background is-visible" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4" muted playsinline preload="auto"></video>
+    </div>
+
+    <div class="preloader" id="preloader" aria-label="Loading Earth">
+      <video id="preloader-video" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4" muted playsinline preload="auto"></video>
+      <div class="preloader-shade"></div>
+    </div>
+
+    <img class="floating-logo" id="floating-logo" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/eb7e0f53-50cd-4af5-abc4-8b9a52cdc01b.svg" alt="Logo">
+
+    <div class="preloader-count" id="preloader-count" aria-live="polite">
+      <span id="preloader-value">0</span><span class="percent">%</span>
+    </div>
+
+    <canvas id="scene-canvas" class="scene-canvas" aria-hidden="true"></canvas>
+    <div class="shade" aria-hidden="true"></div>
+
+    <!-- Clean Title & Caption -->
+    <section class="planet-content chrome">
+      <h1 id="planet-title">MIRA</h1>
+      <div class="descent-caption">SEE THE RULE. UNDERSTAND ITS IMPACT. • BHOPAL MUNICIPAL CORPORATION</div>
+      <button class="enter-btn" onclick="launchWorkspace()">Enter MIRA / नियम जांचें →</button>
+    </section>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true">
+      <span class="cursor-orbit"></span>
+      <span class="cursor-dot"></span>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Elements
+      const earthBg = document.getElementById('earth-background');
+      const preloader = document.getElementById('preloader');
+      const preloaderVideo = document.getElementById('preloader-video');
+      const preloaderCount = document.getElementById('preloader-count');
+      const preloaderValue = document.getElementById('preloader-value');
+      const floatingLogo = document.getElementById('floating-logo');
+      const chromeEls = document.querySelectorAll('.chrome');
+
+      // Custom Cursor
+      const cursorContainer = document.querySelector('.custom-cursor');
+      const cursorDot = document.querySelector('.cursor-dot');
+      const cursorOrbit = document.querySelector('.cursor-orbit');
+
+      let curX = window.innerWidth / 2;
+      let curY = window.innerHeight / 2;
+      let orbitX = curX;
+      let orbitY = curY;
+
+      /* ====================================================================
+         1. PRELOADER & STARTUP
+         ==================================================================== */
+      function startPreloader() {
+        const duration = 2200;
+        const startTime = performance.now();
+
+        if (preloaderVideo) {
+          preloaderVideo.currentTime = 0;
+          preloaderVideo.play().catch(() => {});
+        }
+
+        function update(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          const count = Math.floor(progress * 100);
+          preloaderValue.textContent = count;
+
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            finishPreloader();
+          }
+        }
+
+        requestAnimationFrame(update);
+      }
+
+      function finishPreloader() {
+        preloader.classList.add('is-hidden');
+        preloaderCount.classList.add('is-hidden');
+        floatingLogo.classList.add('is-docked');
+
+        // Single-shot video playback: freeze at final surface frame (strictly no loop)
+        const video = document.querySelector('video.is-visible') || document.querySelector('video');
+        if (video) {
+          video.loop = false;
+          video.currentTime = 0;
+          video.play().catch(() => {});
+
+          video.addEventListener('ended', () => {
+            video.pause();
+            // Do not reset currentTime so final frame stays frozen permanently
+          }, { once: true });
+
+          video.addEventListener('timeupdate', () => {
+            if (video.duration && video.currentTime >= video.duration - 0.06) {
+              video.pause();
+            }
+          });
+        }
+
+        setTimeout(() => {
+          chromeEls.forEach(el => el.classList.add('is-ready'));
+        }, 300);
+      }
+
+
+      /* ====================================================================
+         2. CANVAS BACKGROUND PARTICLES & ATMOSPHERE (#scene-canvas)
+         ==================================================================== */
+      const sceneCanvas = document.getElementById('scene-canvas');
+      const sCtx = sceneCanvas.getContext('2d');
+      let sw = 0, sh = 0;
+      let stars = [];
+
+      function resizeSceneCanvas() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        sw = window.innerWidth;
+        sh = window.innerHeight;
+        sceneCanvas.width = sw * dpr;
+        sceneCanvas.height = sh * dpr;
+        sCtx.scale(dpr, dpr);
+        initStars();
+      }
+
+      function initStars() {
+        stars = [];
+        const count = Math.floor((sw * sh) / 6000);
+        for (let i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random() * sw,
+            y: Math.random() * sh,
+            size: Math.random() * 1.5 + 0.4,
+            baseAlpha: Math.random() * 0.7 + 0.2,
+            phase: Math.random() * Math.PI * 2,
+            depth: Math.random() * 20 + 5
+          });
+        }
+      }
+
+      function renderScene(now) {
+        const t = now * 0.001;
+        sCtx.clearRect(0, 0, sw, sh);
+
+        sCtx.fillStyle = '#ffffff';
+        stars.forEach(st => {
+          const flicker = Math.sin(t * 1.8 + st.phase) * 0.2;
+          const alpha = Math.max(0.08, Math.min(st.baseAlpha + flicker, 0.95));
+          const ox = (curX / sw - 0.5) * st.depth;
+          const oy = (curY / sh - 0.5) * st.depth;
+
+          sCtx.globalAlpha = alpha;
+          sCtx.beginPath();
+          sCtx.arc(st.x + ox, st.y + oy, st.size, 0, Math.PI * 2);
+          sCtx.fill();
+        });
+
+        // Delicate horizon latitude arc
+        sCtx.globalAlpha = 0.05;
+        sCtx.strokeStyle = '#ffffff';
+        sCtx.lineWidth = 1;
+        sCtx.beginPath();
+        sCtx.arc(sw * 0.5, sh * 0.5, Math.max(sw, sh) * 0.48, 0, Math.PI * 2);
+        sCtx.stroke();
+        sCtx.globalAlpha = 1;
+
+        requestAnimationFrame(renderScene);
+      }
+
+      /* ====================================================================
+         3. CUSTOM FLUID CURSOR
+         ==================================================================== */
+      window.addEventListener('mousemove', e => {
+        curX = e.clientX;
+        curY = e.clientY;
+
+        if (cursorDot) {
+          cursorDot.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
+        }
+
+        cursorContainer.classList.toggle('is-hover', !!e.target.closest('button, a'));
+      });
+
+      window.addEventListener('mousedown', () => cursorContainer.classList.add('is-down'));
+      window.addEventListener('mouseup', () => cursorContainer.classList.remove('is-down'));
+
+      function renderCursor() {
+        // Smooth 0.2 lerp follow
+        orbitX += (curX - orbitX) * 0.2;
+        orbitY += (curY - orbitY) * 0.2;
+
+        if (cursorOrbit) {
+          cursorOrbit.style.transform = `translate3d(${orbitX}px, ${orbitY}px, 0)`;
+        }
+
+        requestAnimationFrame(renderCursor);
+      }
+
+      window.launchWorkspace = function () {
+        window.location.href = 'http://localhost:5173/workbench';
+      };
+
+      /* ====================================================================
+         4. INITIALIZATION & RESIZE
+         ==================================================================== */
+      window.addEventListener('resize', () => {
+        resizeSceneCanvas();
+      });
+
+      window.addEventListener('DOMContentLoaded', () => {
+        resizeSceneCanvas();
+        startPreloader();
+        requestAnimationFrame(renderScene);
+        requestAnimationFrame(renderCursor);
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { ArchitecturalCursor } from "@/components/ArchitecturalCursor"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ReceiptPage } from "@/pages/ReceiptPage"
 import { Workbench } from "@/pages/Workbench"
@@ -16,9 +17,11 @@ export function AppRoutes() {
 export default function App() {
   return (
     <TooltipProvider>
+      <ArchitecturalCursor />
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
     </TooltipProvider>
   )
 }
+
