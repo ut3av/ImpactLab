@@ -105,6 +105,24 @@ def search_rules(request: Request, q: str = Query(min_length=1, max_length=300),
     }
 
 
+@router.get("/rules")
+def list_rules(request: Request):
+    st = _state(request)
+    return {
+        "total": len(st.store.records),
+        "rules": [
+            {
+                "rule": rec.rule,
+                "title": rec.title,
+                "part": rec.part,
+                "page_start": rec.page_start,
+                "page_end": rec.page_end,
+            }
+            for rec in st.store.records.values()
+        ],
+    }
+
+
 @router.get("/rules/{rule_id}")
 def get_rule(request: Request, rule_id: str):
     st = _state(request)
@@ -169,3 +187,9 @@ def explain(request: Request, body: ExplainRequest):
         return st.explainer.explain(body, client=request.client.host if request.client else "anon")
     except ValidationError as exc:
         raise _invalid_inputs(exc)
+
+
+@router.post("/query", response_model=AnswerResponse)
+def query(request: Request, body: AnswerRequest):
+    return answer(request, body)
+

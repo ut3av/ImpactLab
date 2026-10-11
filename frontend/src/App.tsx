@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { ArchitecturalCursor } from "@/components/ArchitecturalCursor"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import type { SpeechController } from "@/lib/speech/engine"
 import { SpeechProvider } from "@/lib/speech/SpeechProvider"
@@ -21,9 +22,11 @@ export function AppRoutes({ speech }: { speech?: SpeechController } = {}) {
 export default function App() {
   return (
     <TooltipProvider>
+      <ArchitecturalCursor />
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
     </TooltipProvider>
   )
 }
+

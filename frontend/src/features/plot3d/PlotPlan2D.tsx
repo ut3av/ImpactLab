@@ -25,13 +25,13 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
           <line x1="0" y1="0" x2="0" y2="0.8" stroke={ZONE_COLORS.unresolved} strokeWidth="0.25" strokeOpacity="0.6" />
         </pattern>
       </defs>
-      <rect x={0} y={pad + plot.d} width={vbW} height={roadD} fill={model.road?.width ? "#8d929b" : "#b8bcc2"} opacity={model.road?.width ? 1 : 0.6} />
-      <line x1={0} x2={vbW} y1={pad + plot.d + roadD / 2} y2={pad + plot.d + roadD / 2} stroke="#f3efe6" strokeWidth={fs * 0.12} strokeDasharray={`${fs} ${fs * 0.8}`} />
-      <text x={fs * 0.6} y={pad + plot.d + roadD / 2 - fs * 0.3} fontSize={fs * 0.85} fill="#f8f6f1" fontFamily="Geist Mono Variable, monospace">
+      <rect x={0} y={pad + plot.d} width={vbW} height={roadD} fill={model.road?.width ? "#334155" : "#475569"} opacity={model.road?.width ? 1 : 0.7} />
+      <line x1={0} x2={vbW} y1={pad + plot.d + roadD / 2} y2={pad + plot.d + roadD / 2} stroke="#ffffff" strokeWidth={fs * 0.14} strokeDasharray={`${fs} ${fs * 0.8}`} />
+      <text x={fs * 0.6} y={pad + plot.d + roadD / 2 - fs * 0.3} fontSize={fs * 0.85} fill="#f8fafc" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
         {model.road?.width ? `Street ${model.road.width} m` : "Street width not given"}
       </text>
 
-      <rect x={pad} y={pad} width={plot.w} height={plot.d} fill="#f8f5ee" stroke="#1f2a3d" strokeWidth={fs * 0.12} />
+      <rect x={pad} y={pad} width={plot.w} height={plot.d} fill="#ffffff" stroke="#0f172a" strokeWidth={fs * 0.12} />
 
       {model.zones.map((z) => {
         const color = z.check === "below_minimum" ? ZONE_COLORS.conflict : ZONE_COLORS[z.state]
@@ -116,21 +116,21 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
             y={Y(model.building.y + model.building.d)}
             width={model.building.w}
             height={model.building.d}
-            fill={selected === "building" ? "#cfc6b4" : "#ddd6c8"}
-            stroke="#1f2a3d"
+            fill={selected === "building" ? "#cbd5e1" : "#e2e8f0"}
+            stroke="#475569"
             strokeWidth={fs * 0.08}
           />
-          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={Math.min(fs * 0.7, model.building.w * 0.1)} textAnchor="middle" fill="#1f2a3d" fontFamily="Geist Mono Variable, monospace">
+          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={Math.min(fs * 0.7, model.building.w * 0.1)} textAnchor="middle" fill="#0f172a" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
             <tspan x={pad + model.building.x + model.building.w / 2} dy="-0.3em">Proposed</tspan>
             <tspan x={pad + model.building.x + model.building.w / 2} dy="1.2em">(illustrative)</tspan>
           </text>
         </g>
       )}
 
-      <text x={pad + plot.w / 2} y={pad - fs * 0.6} fontSize={fs * 0.8} textAnchor="middle" fill="#1f2a3d" fontFamily="Geist Mono Variable, monospace">
+      <text x={pad + plot.w / 2} y={pad - fs * 0.6} fontSize={fs * 0.8} textAnchor="middle" fill="#475569" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
         {`${plot.w} m`}
       </text>
-      <text x={pad - fs * 0.6} y={pad + plot.d / 2} fontSize={fs * 0.8} textAnchor="end" dominantBaseline="middle" fill="#1f2a3d" fontFamily="Geist Mono Variable, monospace">
+      <text x={pad - fs * 0.6} y={pad + plot.d / 2} fontSize={fs * 0.8} textAnchor="end" dominantBaseline="middle" fill="#475569" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
         {`${plot.d} m`}
       </text>
     </svg>

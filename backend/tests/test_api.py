@@ -93,3 +93,22 @@ def test_unknown_api_route_is_json_404(client):
 def test_answer_schema_valid(ask):
     d = ask("What is the fee for building permission for a residential house?")
     AnswerResponse.model_validate(d)
+
+
+def test_list_rules(client):
+    r = client.get("/api/rules")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 106
+    assert len(data["rules"]) == 106
+    rule_ids = {x["rule"] for x in data["rules"]}
+    assert "1" in rule_ids and "56" in rule_ids and "26-B" in rule_ids
+
+
+def test_query_alias(client):
+    r = client.post("/api/query", json={"question": "rear open space"})
+    assert r.status_code == 200
+    d = r.json()
+    assert d["question"] == "rear open space"
+    assert "primary_status" in d
+
