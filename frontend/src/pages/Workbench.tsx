@@ -1,6 +1,7 @@
-import { ArrowDownToLine, Database, ScanSearch } from "lucide-react"
+import { ArrowDownToLine, Database } from "lucide-react"
 import { useCallback, useMemo, useRef, useState, type RefObject } from "react"
 import { useNavigate } from "react-router-dom"
+import { MiraMark } from "@/components/brand/MiraLogo"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AskBar } from "@/features/ask/AskBar"
 import { GUIDE_PANEL_ID, type GuideContext } from "@/features/guide/steps"
@@ -153,8 +154,8 @@ function AppHeader({ health, healthError, guideOpen, onToggleGuide, guideButtonR
   return (
     <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b bg-ink px-4 py-2.5 text-paper">
       <div className="flex items-center gap-3">
-        <div className="grid size-7 place-items-center rounded-[3px] border border-paper/30">
-          <ScanSearch className="size-4" aria-hidden />
+        <div className="grid size-7 place-items-center rounded-[4px] bg-[#0b0a08] p-1 text-[#fffefd] border border-paper/20 shadow-xs">
+          <MiraMark size={18} />
         </div>
         <div className="leading-tight">
           <p className="text-[15px] font-semibold tracking-tight">

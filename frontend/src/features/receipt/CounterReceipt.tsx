@@ -60,12 +60,15 @@ export function CounterReceipt({ record, onBack }: { record: InspectionRecord; o
 
       <article className="print-card mx-auto max-w-[210mm] border bg-white px-10 py-9 text-ink shadow-sm print:px-0 print:py-0" aria-label="Counter Receipt">
         <header className="flex items-start justify-between border-b-2 border-ink pb-4">
-          <div>
-            <p className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">Counter Receipt</p>
-            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight">
-              MIRA
-            </h1>
-            <p className="text-[12px] text-muted-foreground">Municipal Intelligence for Rules & Architecture · “See the Rules. Understand the Structure.”</p>
+          <div className="flex items-center gap-3.5">
+            <img src="/mira-mark.png" alt="MIRA" className="size-11 rounded-sm border border-ink/20 shrink-0" />
+            <div>
+              <p className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">Counter Receipt</p>
+              <h1 className="mt-0.5 text-2xl font-semibold tracking-tight">
+                MIRA
+              </h1>
+              <p className="text-[12px] text-muted-foreground">Municipal Intelligence for Rules & Architecture · “See the Rules. Understand the Structure.”</p>
+            </div>
           </div>
           <dl className="text-right font-mono text-[11px] leading-5">
             <div>

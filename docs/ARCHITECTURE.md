@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/mira-logo.png" alt="MIRA Logo" width="380" />
+</p>
+
 # MIRA: Technical Architecture
 
 ## 1. System Overview

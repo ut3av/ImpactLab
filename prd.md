@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/mira-logo.png" alt="MIRA Logo" width="380" />
+</p>
+
 # MIRA: Product Requirements Document (PRD)
 
 **Product:** MIRA  

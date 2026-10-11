@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
+import { MiraMark } from "@/components/brand/MiraLogo"
 import { Button } from "@/components/ui/button"
 import { webglAvailable } from "@/features/plot3d/PlotViewport"
 import { PlaybackControls } from "@/features/speech/PlaybackControls"
@@ -184,9 +185,14 @@ export function VoiceGuide({ ctx, onClose }: Props) {
       )}
     >
       <div className="flex items-center justify-between gap-2 border-b px-4 py-2">
-        <h2 id={TITLE_ID} ref={headingRef} tabIndex={-1} className={cn("panel-label rounded-sm text-cobalt!", lang === "hi" && HI_LABEL, FOCUS)}>
-          {t.title}
-        </h2>
+        <div className="flex items-center gap-2">
+          <div className="grid size-5 place-items-center rounded-[3px] bg-[#0b0a08] p-0.5 text-[#fffefd]">
+            <MiraMark size={13} />
+          </div>
+          <h2 id={TITLE_ID} ref={headingRef} tabIndex={-1} className={cn("panel-label rounded-sm text-cobalt!", lang === "hi" && HI_LABEL, FOCUS)}>
+            {t.title}
+          </h2>
+        </div>
         <Button type="button" size="xs" variant="ghost" onClick={close}>
           {t.close}
         </Button>

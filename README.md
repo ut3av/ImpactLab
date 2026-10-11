@@ -1,9 +1,13 @@
 <div align="center">
 
+<p align="center">
+  <img src="docs/assets/mira-logo.png" alt="MIRA Logo" width="460" />
+</p>
+
 # MIRA · Municipal Intelligence for Rules & Architecture
 
 ### *Municipal Intelligence for Rules & Architecture · See the Rules. Understand the Structure.*
-#### *नियम देखें, प्रभाव समझें*
+#### *नियम देखें, संरचना समझें*
 
 <p align="center">
   <strong>An Evidence-Backed Regulatory Intelligence & 3D Spatial Decision-Support System</strong><br>
