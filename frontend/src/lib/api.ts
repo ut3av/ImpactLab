@@ -20,12 +20,15 @@ export class ApiError extends Error {
   }
 }
 
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "")
+
 async function request<T>(path: string, schema: z.ZodType<T>, init?: RequestInit, timeoutMs = 45_000): Promise<T> {
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), timeoutMs)
+  const url = `${BASE_URL}${path}`
   let res: Response
   try {
-    res = await fetch(path, {
+    res = await fetch(url, {
       ...init,
       signal: ctrl.signal,
       headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },

@@ -266,7 +266,56 @@ services:
 
 ---
 
-## 7. Continuous Integration (GitHub Actions)
+## 7. Vercel Deployment (Frontend Edge Deployment)
+
+For teams preferring Vercel's global Edge CDN for the React frontend while running the FastAPI service on Render:
+
+### Architecture
+
+```mermaid
+graph LR
+    Browser["Client Browser"] -->|HTTPS (Edge CDN)| Vercel["Vercel (React 19 SPA)"]
+    Vercel -->|Rewrites /api/*| RenderBackend["Render Web Service (FastAPI /api/*)"]
+```
+
+The repository includes `vercel.json` (root) and `frontend/vercel.json` with SPA routing and API proxy rewrites:
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://niyamlens.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+### Steps to Deploy Frontend to Vercel:
+1. **Push code to GitHub.**
+2. **Import into Vercel:** In [vercel.com/dashboard](https://vercel.com/dashboard), click **Add New...** $\to$ **Project**, then import `ImpactLab`.
+3. **Configure Project:**
+   * **Framework Preset:** Vite
+   * **Root Directory:** `./` (or `frontend` if deploying only the frontend folder)
+   * **Build Command:** `npm --prefix frontend run build` (or `npm run build` if Root is `frontend`)
+   * **Output Directory:** `frontend/dist` (or `dist` if Root is `frontend`)
+4. **Environment Variables (Optional):**
+   * If your Render backend is not `https://niyamlens.onrender.com`, set:
+     `VITE_API_BASE_URL=https://<your-actual-service>.onrender.com`
+5. **Click Deploy:** Vercel deploys the application with global edge caching and instant atomic invalidation.
+
+---
+
+## 8. Continuous Integration (GitHub Actions)
 
 The repository includes `.github/workflows/ci.yml` which triggers on every pull request and push to `main`:
 1. **Frontend Job:** Runs Node 22, `npm ci`, `oxlint`, `vitest` unit tests, and production build (`tsc -b && vite build`).
@@ -275,7 +324,7 @@ The repository includes `.github/workflows/ci.yml` which triggers on every pull 
 
 ---
 
-## 8. Troubleshooting & Common Issues
+## 9. Troubleshooting & Common Issues
 
 | Symptom | Likely Cause | Resolution |
 |---|---|---|
