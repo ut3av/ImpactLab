@@ -16,8 +16,8 @@ type Props = {
 /** Html labels portal into a wrapper we own, so unmounting the canvas never removes their container first. */
 const PortalCtx = createContext<RefObject<HTMLDivElement> | null>(null)
 
-const PAPER = "#0d0c0a"
-const INK = "#ffffff"
+const PAPER = "#f8fafc"
+const INK = "#0f172a"
 
 /** Lightweight scene: flat planes, one box, a few lines and labels; renders on demand only. */
 const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model, selected, onSelect, reducedMotion }, ref) {
@@ -57,16 +57,16 @@ const PlotScene3D = forwardRef<SceneHandle, Props>(function PlotScene3D({ model,
       <color attach="background" args={[PAPER]} />
       <ambientLight intensity={1.1} />
       <directionalLight position={[-20, 35, 25]} intensity={1.5} />
-      <hemisphereLight args={["#ffffff", "#1f1d1a", 0.6]} />
+      <hemisphereLight args={["#ffffff", "#cbd5e1", 0.7]} />
       <Grid
         position={[0, -0.01, 0]}
         args={[200, 200]}
         cellSize={1}
         cellThickness={0.5}
-        cellColor="#26231f"
+        cellColor="rgba(15, 23, 42, 0.07)"
         sectionSize={5}
         sectionThickness={0.9}
-        sectionColor="#3d3731"
+        sectionColor="rgba(15, 23, 42, 0.14)"
         fadeDistance={span * 4}
         fadeStrength={1.5}
         infiniteGrid
@@ -103,15 +103,15 @@ function Plot({ model, selected, onSelect }: { model: SceneModel; selected: stri
       {/* Plot surface */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]} onClick={(e) => { e.stopPropagation(); onSelect("plot") }}>
         <planeGeometry args={[plot.w, plot.d]} />
-        <meshStandardMaterial color={selected === "plot" ? "#282420" : "#1a1715"} />
+        <meshStandardMaterial color={selected === "plot" ? "#e2e8f0" : "#ffffff"} />
       </mesh>
       <Line points={boundary} color={INK} lineWidth={2.2} />
 
-      {/* Road along the frontage (realistic asphalt tone) */}
+      {/* Road along the frontage (sleek dark asphalt with crisp white markings) */}
       <group onClick={(e: ThreeEvent<MouseEvent>) => { e.stopPropagation(); onSelect("road") }}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, hd + roadDepth / 2]}>
           <planeGeometry args={[Math.max(plot.w * 2.2, 30), roadDepth]} />
-          <meshStandardMaterial color={roadW ? "#161412" : "#201c18"} transparent opacity={roadW ? 0.95 : 0.7} />
+          <meshStandardMaterial color={roadW ? "#1e293b" : "#334155"} transparent opacity={roadW ? 0.95 : 0.7} />
         </mesh>
         <Line
           points={[[-Math.max(plot.w * 1.1, 15), 0.02, hd + roadDepth / 2], [Math.max(plot.w * 1.1, 15), 0.02, hd + roadDepth / 2]]}
@@ -126,10 +126,10 @@ function Plot({ model, selected, onSelect }: { model: SceneModel; selected: stri
         {roadW ? `Street ${roadW} m` : "Street width not given"}
       </Tag>
 
-      {/* Plot dimensions (user input) */}
-      <Line points={[[-hw, 0.04, hd + 0.35], [hw, 0.04, hd + 0.35]]} color="#78716c" lineWidth={1.2} />
+      {/* Plot dimensions (clean hairline dimension rules) */}
+      <Line points={[[-hw, 0.04, hd + 0.35], [hw, 0.04, hd + 0.35]]} color="rgba(15, 23, 42, 0.35)" lineWidth={1.2} />
       <Tag position={[0, 0.05, hd + 0.9]} tone="ink">{`${plot.w} m`}</Tag>
-      <Line points={[[-hw - 0.35, 0.04, hd], [-hw - 0.35, 0.04, -hd]]} color="#78716c" lineWidth={1.2} />
+      <Line points={[[-hw - 0.35, 0.04, hd], [-hw - 0.35, 0.04, -hd]]} color="rgba(15, 23, 42, 0.35)" lineWidth={1.2} />
       <Tag position={[-hw - 1.3, 0.05, 0]} tone="ink">{`${plot.d} m`}</Tag>
 
       {model.zones.map((z) => (
@@ -164,7 +164,7 @@ function ZoneMesh({ z, plot, selected, onSelect }: { z: SceneZone; plot: { w: nu
   const [hover, setHover] = useState(false)
   const [cx, cz] = toWorld(plot, z.x + z.w / 2, z.y + z.d / 2)
   const color = z.check === "below_minimum" ? ZONE_COLORS.conflict : ZONE_COLORS[z.state]
-  const opacity = selected ? 0.6 : hover ? 0.45 : 0.3
+  const opacity = selected ? 0.45 : hover ? 0.3 : 0.18
   useEffect(() => {
     document.body.style.cursor = hover ? "pointer" : ""
     return () => {
@@ -209,10 +209,10 @@ function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["
       }}
     >
       <boxGeometry args={[b.w, b.h, b.d]} />
-      <meshStandardMaterial color={selected ? "#403a34" : "#2c2722"} transparent opacity={0.88} roughness={0.4} />
-      <Edges color="#ffffff" />
+      <meshStandardMaterial color={selected ? "#e2e8f0" : "#ffffff"} transparent opacity={0.65} roughness={0.2} metalness={0.05} />
+      <Edges color="#0f172a" />
       <Html position={[0, b.h / 2 + 0.6, 0]} center zIndexRange={[20, 0]} portal={portal ?? undefined}>
-        <span className="pointer-events-none rounded-md border border-white/20 bg-stone-900/90 px-2 py-0.5 font-sans text-[11px] font-medium whitespace-nowrap text-white shadow-md backdrop-blur-xs">
+        <span className="pointer-events-none rounded-md border border-slate-300 bg-white/95 px-2 py-0.5 font-sans text-[11px] font-medium whitespace-nowrap text-[#0f172a] shadow-md backdrop-blur-xs">
           Proposed building · illustrative{b.heightGiven ? ` · ${b.h} m` : " · height not given"}
         </span>
       </Html>
@@ -221,11 +221,11 @@ function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["
 }
 
 const TAG_TONES = {
-  ink: "border-white/25 bg-stone-900/95 text-white shadow-md font-bold",
-  neutral: "border-white/15 bg-stone-900/90 text-stone-200 shadow-md font-semibold",
-  cobalt: "border-blue-500/40 bg-blue-950/90 text-blue-300 shadow-md font-bold",
-  review: "border-amber-500/40 bg-amber-950/90 text-amber-300 shadow-md font-bold",
-  alert: "border-rose-500/40 bg-rose-950/90 text-rose-300 shadow-md font-bold",
+  ink: "border-slate-300 bg-white text-[#0f172a] shadow-md font-bold",
+  neutral: "border-slate-300 bg-white text-[#0f172a] shadow-md font-semibold",
+  cobalt: "border-blue-500/40 bg-blue-50 text-blue-700 shadow-md font-bold",
+  review: "border-[#d4af37]/60 bg-amber-50 text-amber-800 shadow-md font-bold",
+  alert: "border-rose-400 bg-rose-50 text-rose-700 shadow-md font-bold",
 } as const
 
 function Tag({ position, tone, children, onClick }: { position: [number, number, number]; tone: keyof typeof TAG_TONES; children: string; onClick?: () => void }) {
@@ -236,7 +236,7 @@ function Tag({ position, tone, children, onClick }: { position: [number, number,
         type="button"
         tabIndex={-1}
         onClick={onClick}
-        className={`rounded-md border px-2 py-0.5 font-sans text-[11px] whitespace-nowrap shadow-md backdrop-blur-xs transition-transform active:scale-95 ${TAG_TONES[tone]} ${onClick ? "cursor-pointer hover:border-amber-400 hover:shadow-lg" : "pointer-events-none"}`}
+        className={`rounded-md border px-2 py-0.5 font-sans text-[11px] whitespace-nowrap shadow-md backdrop-blur-xs transition-transform active:scale-95 ${TAG_TONES[tone]} ${onClick ? "cursor-pointer hover:border-[#0f172a] hover:shadow-lg" : "pointer-events-none"}`}
       >
         {children}
       </button>

@@ -26,9 +26,9 @@ export function AskBar({ busy, onAsk }: Props) {
           e.preventDefault()
           submit()
         }}
-        className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-2.5 py-1.5 shadow-md backdrop-blur-md transition-all focus-within:border-white/35 focus-within:ring-2 focus-within:ring-white/15"
+        className="flex items-center gap-2 rounded-xl border border-white/15 bg-[#131722] px-2.5 py-1.5 shadow-md backdrop-blur-md transition-all focus-within:border-white focus-within:ring-2 focus-within:ring-white/20"
       >
-        <Search className="size-4 text-stone-400 shrink-0 ml-0.5" aria-hidden />
+        <Search className="size-4 text-white/60 shrink-0 ml-0.5" aria-hidden />
         <label htmlFor="question" className="sr-only">
           Question in English or Hindi
         </label>
@@ -45,14 +45,14 @@ export function AskBar({ busy, onAsk }: Props) {
             }
           }}
           aria-invalid={tooLong}
-          className="max-h-24 min-h-8 flex-1 resize-none border-0 bg-transparent px-1.5 py-1 text-[13px] text-white shadow-none focus-visible:ring-0 placeholder:text-stone-400 leading-normal"
+          className="max-h-24 min-h-8 flex-1 resize-none border-0 bg-transparent px-1.5 py-1 text-[13px] text-white shadow-none focus-visible:ring-0 placeholder:text-white/40 leading-normal"
         />
         <Button
           type="submit"
           size="icon"
           disabled={!trimmed || tooLong || busy}
           aria-label="Ask"
-          className="size-7.5 rounded-lg bg-white text-black hover:bg-amber-400 hover:text-black shadow-xs shrink-0 transition-transform active:scale-95 disabled:bg-white/10 disabled:text-stone-500"
+          className="size-7.5 rounded-lg bg-white text-black hover:bg-slate-200 font-bold shadow-xs shrink-0 transition-transform active:scale-95 disabled:bg-white/15 disabled:text-white/30"
         >
           <ArrowUp className="size-3.5" />
         </Button>

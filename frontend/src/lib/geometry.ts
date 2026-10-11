@@ -119,8 +119,8 @@ export function buildScene(inputs: ProjectInputs, calcs: CalcResult[]): SceneMod
 }
 
 export const ZONE_COLORS = {
-  verified: "#f59e0b",
-  computed: "#d97706",
-  unresolved: "#eab308",
+  verified: "#2563eb",
+  computed: "#3b82f6",
+  unresolved: "#d4af37",
   conflict: "#ef4444",
 } as const
