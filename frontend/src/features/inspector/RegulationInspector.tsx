@@ -569,21 +569,24 @@ function SelectionNote({
 function InspectorEmpty() {
   const guidanceId = useId()
   return (
-    <div className="space-y-4 p-5 text-slate-900">
-      <p className="font-mono text-[10.5px] font-bold tracking-wider text-slate-500 uppercase">Regulation inspector</p>
-      <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 shadow-2xs space-y-2.5">
-        <p className="text-[14px] leading-relaxed font-medium text-slate-800">
-          Ask a question in English or Hindi, or enter project inputs and evaluate a requirement. Every result shows its rule number, PDF page and the exact source text.
+    <div className="flex h-full flex-col justify-between p-5 text-slate-600">
+      <div className="flex flex-col items-center justify-center py-6 text-center">
+        <div className="mx-auto mb-3 grid size-12 place-items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+          <FileText className="size-6 text-slate-400" aria-hidden />
+        </div>
+        <h3 className="text-sm font-semibold text-slate-800">No Assessment Evaluated</h3>
+        <p className="mt-1 text-[12.5px] leading-relaxed text-slate-500 max-w-xs">
+          Ask a question in English or Hindi, or enter project inputs and click Evaluate Compliance.
         </p>
-        <ul className="space-y-2 text-[12.5px] text-slate-600">
-          <li className="flex items-start gap-1.5"><span className="text-blue-600 font-bold">•</span> Values are computed only from tables checked against the supplied English PDF.</li>
-          <li className="flex items-start gap-1.5"><span className="text-blue-600 font-bold">•</span> Missing inputs are asked for, never assumed.</li>
-          <li className="flex items-start gap-1.5"><span className="text-blue-600 font-bold">•</span> Questions outside the rules return “Not found in the supplied rules.”</li>
-        </ul>
+        <div className="mt-4 flex items-center gap-1.5 text-[11px] text-slate-400">
+          <span className="size-1.5 rounded-full bg-emerald-500" />
+          <span>Bhopal Municipal Corporation • Rule Engine Ready</span>
+        </div>
       </div>
-      <div data-guide="explain" className="space-y-1.5 border-t border-slate-200 pt-4">
+
+      <div data-guide="explain" className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-3.5 space-y-2 text-left">
         <ExplainButton label="Explain with AI" unavailable describedBy={guidanceId} />
-        <p id={guidanceId} className="text-[12.5px] leading-snug text-slate-500">
+        <p id={guidanceId} className="text-[11.5px] leading-snug text-slate-500">
           {EXPLAIN_GUIDANCE}
         </p>
       </div>

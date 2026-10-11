@@ -1,5 +1,7 @@
 import { ZONE_COLORS, type SceneModel } from "@/lib/geometry"
 
+const FONT_SANS = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+
 /** Top-down SVG plan: the accessible / no-WebGL equivalent of the 3D scene. */
 export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; selected: string | null; onSelect: (k: string | null) => void }) {
   const plot = model.plot!
@@ -25,9 +27,9 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
           <line x1="0" y1="0" x2="0" y2="0.8" stroke={ZONE_COLORS.unresolved} strokeWidth="0.25" strokeOpacity="0.6" />
         </pattern>
       </defs>
-      <rect x={0} y={pad + plot.d} width={vbW} height={roadD} fill={model.road?.width ? "#334155" : "#475569"} opacity={model.road?.width ? 1 : 0.7} />
+      <rect x={0} y={pad + plot.d} width={vbW} height={roadD} fill={model.road?.width ? "#1e293b" : "#334155"} opacity={model.road?.width ? 1 : 0.7} />
       <line x1={0} x2={vbW} y1={pad + plot.d + roadD / 2} y2={pad + plot.d + roadD / 2} stroke="#ffffff" strokeWidth={fs * 0.14} strokeDasharray={`${fs} ${fs * 0.8}`} />
-      <text x={fs * 0.6} y={pad + plot.d + roadD / 2 - fs * 0.3} fontSize={fs * 0.85} fill="#f8fafc" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
+      <text x={fs * 0.6} y={pad + plot.d + roadD / 2 - fs * 0.3} fontSize={fs * 0.85} fill="#f8fafc" fontFamily={FONT_SANS} fontWeight="600">
         {model.road?.width ? `Street ${model.road.width} m` : "Street width not given"}
       </text>
 
@@ -47,7 +49,7 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
               onSelect(z.key)
             }}
             onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect(z.key)}
-            className="cursor-pointer focus:outline-none"
+            className="cursor-pointer focus:outline-none transition-opacity hover:opacity-90"
           >
             <rect
               x={pad + z.x}
@@ -66,7 +68,8 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
               textAnchor="middle"
               dominantBaseline="middle"
               fill={color}
-              fontFamily="Geist Mono Variable, monospace"
+              fontFamily={FONT_SANS}
+              fontWeight="600"
               transform={z.w < z.d * 0.5 ? `rotate(-90 ${pad + z.x + z.w / 2} ${Y(z.y + z.d / 2)})` : undefined}
             >
               {`${z.depth} m · R${z.rule}`}
@@ -120,17 +123,18 @@ export function PlotPlan2D({ model, selected, onSelect }: { model: SceneModel; s
             stroke="#475569"
             strokeWidth={fs * 0.08}
           />
-          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={Math.min(fs * 0.7, model.building.w * 0.1)} textAnchor="middle" fill="#0f172a" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
+          <text x={pad + model.building.x + model.building.w / 2} y={Y(model.building.y + model.building.d / 2)} fontSize={Math.min(fs * 0.7, model.building.w * 0.1)} textAnchor="middle" fill="#0f172a" fontFamily={FONT_SANS} fontWeight="600">
             <tspan x={pad + model.building.x + model.building.w / 2} dy="-0.3em">Proposed</tspan>
             <tspan x={pad + model.building.x + model.building.w / 2} dy="1.2em">(illustrative)</tspan>
           </text>
         </g>
       )}
 
-      <text x={pad + plot.w / 2} y={pad - fs * 0.6} fontSize={fs * 0.8} textAnchor="middle" fill="#475569" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
+      {/* Dynamic Dimension lines */}
+      <text x={pad + plot.w / 2} y={pad - fs * 0.6} fontSize={fs * 0.8} textAnchor="middle" fill="#334155" fontFamily={FONT_SANS} fontWeight="700">
         {`${plot.w} m`}
       </text>
-      <text x={pad - fs * 0.6} y={pad + plot.d / 2} fontSize={fs * 0.8} textAnchor="end" dominantBaseline="middle" fill="#475569" fontFamily="Geist Mono Variable, monospace" fontWeight="600">
+      <text x={pad - fs * 0.6} y={pad + plot.d / 2} fontSize={fs * 0.8} textAnchor="end" dominantBaseline="middle" fill="#334155" fontFamily={FONT_SANS} fontWeight="700">
         {`${plot.d} m`}
       </text>
     </svg>

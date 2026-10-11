@@ -212,7 +212,7 @@ function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["
       <meshStandardMaterial color={selected ? "#cbd5e1" : "#e2e8f0"} transparent opacity={0.88} roughness={0.4} />
       <Edges color="#475569" />
       <Html position={[0, b.h / 2 + 0.6, 0]} center zIndexRange={[20, 0]} portal={portal ?? undefined}>
-        <span className="pointer-events-none rounded-md border border-slate-200 bg-white/95 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-slate-800 shadow-sm">
+        <span className="pointer-events-none rounded-md border border-slate-200 bg-white/95 px-2 py-0.5 font-sans text-[11px] font-medium whitespace-nowrap text-slate-800 shadow-sm backdrop-blur-xs">
           Proposed building · illustrative{b.heightGiven ? ` · ${b.h} m` : " · height not given"}
         </span>
       </Html>
@@ -221,11 +221,11 @@ function Building({ b, plot, selected, onSelect }: { b: NonNullable<SceneModel["
 }
 
 const TAG_TONES = {
-  ink: "border-slate-300 bg-white text-slate-800 shadow-xs",
-  neutral: "border-slate-200 bg-white/95 text-slate-600 shadow-xs",
-  cobalt: "border-blue-300 bg-blue-50 text-blue-700 shadow-xs font-semibold",
-  review: "border-amber-300 bg-amber-50 text-amber-800 shadow-xs font-semibold",
-  alert: "border-rose-300 bg-rose-50 text-rose-700 shadow-xs font-semibold",
+  ink: "border-slate-300 bg-white text-slate-800 shadow-xs font-bold",
+  neutral: "border-slate-200 bg-white/95 text-slate-700 shadow-xs font-semibold",
+  cobalt: "border-blue-300 bg-blue-50 text-blue-700 shadow-xs font-bold",
+  review: "border-amber-300 bg-amber-50 text-amber-800 shadow-xs font-bold",
+  alert: "border-rose-300 bg-rose-50 text-rose-700 shadow-xs font-bold",
 } as const
 
 function Tag({ position, tone, children, onClick }: { position: [number, number, number]; tone: keyof typeof TAG_TONES; children: string; onClick?: () => void }) {
@@ -236,7 +236,7 @@ function Tag({ position, tone, children, onClick }: { position: [number, number,
         type="button"
         tabIndex={-1}
         onClick={onClick}
-        className={`rounded-md border px-2 py-0.5 font-mono text-[10px] whitespace-nowrap shadow-xs ${TAG_TONES[tone]} ${onClick ? "cursor-pointer hover:border-blue-400" : "pointer-events-none"}`}
+        className={`rounded-md border px-2 py-0.5 font-sans text-[11px] whitespace-nowrap shadow-xs backdrop-blur-xs transition-transform active:scale-95 ${TAG_TONES[tone]} ${onClick ? "cursor-pointer hover:border-blue-400 hover:shadow-sm" : "pointer-events-none"}`}
       >
         {children}
       </button>
